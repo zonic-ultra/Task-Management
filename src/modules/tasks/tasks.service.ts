@@ -3,6 +3,7 @@ import { Task, TasksStatus } from './tasks.model';
 import { v6 as uuid } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { NotFoundException } from '../exceptions/NotFoundException';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 
 @Injectable()
 export class TasksService {
@@ -10,6 +11,31 @@ export class TasksService {
 
   getAllTasks(): Task[] {
     return this.tasks;
+  }
+
+  getTasksWithFilters(filterDto: GetTasksFilterDto): Task[] {
+    const { status, search } = filterDto;
+
+    let tasks = this.getAllTasks();
+
+    if (status) {
+      tasks = tasks.filter((task) => task.status === status);
+    }
+
+    if (search) {
+      tasks = tasks.filter((tasks) => {
+        if (
+          tasks.title.toLocaleLowerCase().includes(search) ||
+          tasks.description.toLocaleLowerCase().includes(search)
+        ) {
+          return true;
+        }
+
+        return false;
+      });
+    }
+
+    return tasks;
   }
 
   createTask(createTaskDto: CreateTaskDto): Task {
