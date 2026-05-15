@@ -10,7 +10,7 @@ import {
   CreateTaskDto,
   GetTasksFilterDto,
   UpdateTaskStatusDto,
-} from './dto/tasks.dto';
+} from './dto/tasks-request.dto';
 import { NotFoundException } from 'src/exceptions/exception';
 
 @Injectable()

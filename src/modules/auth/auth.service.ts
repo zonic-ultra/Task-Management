@@ -9,12 +9,15 @@ import {
 import { LoginUserDto, RegisterUserDto } from './dto/auth-credentials.dto';
 import { EUserRole } from 'src/common/types.common';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async register(authCredentialsDto: RegisterUserDto): Promise<void> {
@@ -43,13 +46,17 @@ export class AuthService {
     await this.userRepository.save(user);
   }
 
-  async login(authCredentialsDto: LoginUserDto): Promise<void> {
+  async login(
+    authCredentialsDto: LoginUserDto,
+  ): Promise<{ accessToken: string }> {
     const { username, password } = authCredentialsDto;
 
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      console.log('Success');
+      const payload: JwtPayload = { username };
+      const accessToken: string = this.jwtService.sign(payload);
+      return { accessToken };
     } else {
       throw new UnauthorizedException('Please check your valid credentials!');
     }

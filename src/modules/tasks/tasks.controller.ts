@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './task.entity';
@@ -14,13 +15,18 @@ import {
   CreateTaskDto,
   GetTasksFilterDto,
   UpdateTaskStatusDto,
-} from './dto/tasks.dto';
-
+} from './dto/tasks-request.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { EUserRole } from 'src/common/types.common';
+import { RolesGuard } from '../auth/roles.guard';
+@UseGuards(AuthGuard())
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(EUserRole.ADMIN)
   getFilterAndSearchTasks(
     @Query() filterDto: GetTasksFilterDto,
   ): Promise<Task[]> {
