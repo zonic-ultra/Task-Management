@@ -5,3 +5,9 @@ export class NotFoundException extends HttpException {
     super(`Task with ID ${id} not found`, HttpStatus.NOT_FOUND);
   }
 }
+
+// export class BadCredentials extends HttpExcepton {
+//   constructor() {
+//     super(`Invalid `)
+//   }
+// }

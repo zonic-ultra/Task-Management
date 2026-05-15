@@ -1,61 +1,46 @@
 import { Body, Injectable } from '@nestjs/common';
-import { Task, TasksStatus } from './tasks.model';
 import { v6 as uuid } from 'uuid';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { NotFoundException } from '../exceptions/NotFoundException';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+
+import { InjectRepository } from '@nestjs/typeorm';
+import { Task } from './task.entity';
+import { Repository } from 'typeorm';
+import { logService } from 'src/common/util.common';
+import { ETasksStatus } from 'src/common/types.common';
+import {
+  CreateTaskDto,
+  GetTasksFilterDto,
+  UpdateTaskStatusDto,
+} from './dto/tasks.dto';
+import { NotFoundException } from 'src/exceptions/exception';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
+  constructor(
+    @InjectRepository(Task)
+    private tasksRepository: Repository<Task>,
+  ) {}
 
-  getAllTasks(): Task[] {
-    return this.tasks;
+  async getAllTasks(): Promise<Task[]> {
+    logService(`Succerssfully retrieved all tasks.`);
+    return await this.tasksRepository.find();
   }
 
-  getTasksWithFilters(filterDto: GetTasksFilterDto): Task[] {
-    const { status, search } = filterDto;
-
-    let tasks = this.getAllTasks();
-
-    if (status) {
-      tasks = tasks.filter((task) => task.status === status);
-    }
-
-    if (search) {
-      tasks = tasks.filter((tasks) => {
-        if (
-          tasks.title.toLocaleLowerCase().includes(search) ||
-          tasks.description.toLocaleLowerCase().includes(search)
-        ) {
-          return true;
-        }
-
-        return false;
-      });
-    }
-
-    return tasks;
-  }
-
-  createTask(createTaskDto: CreateTaskDto): Task {
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
 
-    const task: Task = {
-      id: uuid(),
+    const task = this.tasksRepository.create({
       title,
       description,
-      status: TasksStatus.TODO,
-    };
+      status: ETasksStatus.TODO,
+    });
 
-    this.tasks.push(task);
-
+    await this.tasksRepository.save(task);
+    logService(`Task with ID ${task.id} has been created.`);
     return task;
   }
 
-  findTaskByID(id: string): Task {
-    const found = this.tasks.find((task) => task.id === id);
-
+  async getTaskByID(id: string): Promise<Task> {
+    const found = await this.tasksRepository.findOne({ where: { id } });
     if (!found) {
       throw new NotFoundException(id);
     }
@@ -63,17 +48,51 @@ export class TasksService {
     return found;
   }
 
-  deleteTaskById(id: string): void {
-    const found = this.findTaskByID(id);
+  async updateTaskStatus(
+    id: string,
+    update: UpdateTaskStatusDto,
+  ): Promise<Task> {
+    const task = await this.getTaskByID(id);
+    if (!task) {
+      throw new NotFoundException(id);
+    }
 
-    this.tasks = this.tasks.filter((task) => task.id !== found.id);
-  }
+    task.status = update.status;
 
-  updateTaskStatus(id: string, status: TasksStatus): Task {
-    const task = this.findTaskByID(id);
+    await this.tasksRepository.save(task);
 
-    task.status = status;
+    logService(`Task with ID ${id} has been updated to status ${task.status}.`);
 
     return task;
+  }
+
+  async deleteTaskById(id: string): Promise<void> {
+    const task = await this.getTaskByID(id);
+    if (!task) {
+      throw new NotFoundException(id);
+    }
+    await this.tasksRepository.delete(id);
+    logService(`Task with ID ${id} has been deleted.`);
+  }
+
+  async getTasksWithFilters(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    const { status, search } = filterDto;
+
+    const query = this.tasksRepository.createQueryBuilder('task');
+
+    if (status) {
+      query.andWhere('task.status = :status', { status });
+    }
+
+    if (search) {
+      query.andWhere(
+        '(LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search))',
+        { search: `%${search}%` },
+      );
+    }
+
+    const tasks = await query.getMany();
+
+    return tasks;
   }
 }
