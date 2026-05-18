@@ -12,6 +12,7 @@ import {
   UpdateTaskStatusDto,
 } from './dto/tasks-request.dto';
 import { NotFoundException } from 'src/exceptions/exception';
+import { User } from '../auth/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -25,13 +26,14 @@ export class TasksService {
     return await this.tasksRepository.find();
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     const { title, description } = createTaskDto;
 
     const task = this.tasksRepository.create({
       title,
       description,
       status: ETasksStatus.TODO,
+      user,
     });
 
     await this.tasksRepository.save(task);
@@ -75,10 +77,14 @@ export class TasksService {
     logService(`Task with ID ${id} has been deleted.`);
   }
 
-  async getTasksWithFilters(filterDto: GetTasksFilterDto): Promise<Task[]> {
+  async getTasksWithFilters(
+    filterDto: GetTasksFilterDto,
+    user: User,
+  ): Promise<Task[]> {
     const { status, search } = filterDto;
 
     const query = this.tasksRepository.createQueryBuilder('task');
+    query.where({ user });
 
     if (status) {
       query.andWhere('task.status = :status', { status });

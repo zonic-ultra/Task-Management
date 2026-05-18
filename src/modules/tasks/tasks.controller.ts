@@ -18,41 +18,63 @@ import {
 } from './dto/tasks-request.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { EUserRole } from 'src/common/types.common';
-import { RolesGuard } from '../auth/roles.guard';
+import { GetUser } from '../auth/get-user.decorators';
+import { User } from '../auth/user.entity';
+import { Logger } from '@nestjs/common';
+
 @UseGuards(AuthGuard())
 @Controller('tasks')
 export class TasksController {
+  private logger = new Logger('TaskController');
+
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(EUserRole.ADMIN)
-  getFilterAndSearchTasks(
+  getAllTasks(
     @Query() filterDto: GetTasksFilterDto,
+    @GetUser() user: User,
   ): Promise<Task[]> {
-    return this.tasksService.getTasksWithFilters(filterDto);
+    this.logger.verbose(
+      `User "${user.username}" retrieving all tasks. Filter: ${JSON.stringify(filterDto)}`,
+    );
+    return this.tasksService.getTasksWithFilters(filterDto, user);
   }
 
   @Get('/:id')
-  getTaskByID(@Param('id') id: string): Promise<Task> {
+  getTaskByID(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
+    this.logger.verbose(`User "${user.username}" retrieving specific tasks`);
     return this.tasksService.getTaskByID(id);
   }
 
   @Post('/create')
-  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
+  createTask(
+    @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    this.logger.verbose(
+      `User: "${user.username}" Created a task: ${createTaskDto.title}`,
+    );
+    return this.tasksService.createTask(createTaskDto, user);
   }
 
   @Patch('/:id/status')
   updateTaskStatus(
     @Param('id') id: string,
     @Body() update: UpdateTaskStatusDto,
+    @GetUser() user: User,
   ): Promise<Task> {
+    this.logger.verbose(
+      `User "${user.username}" updating status to ${update.status}`,
+    );
     return this.tasksService.updateTaskStatus(id, update);
   }
 
   @Delete('/:id')
-  deleteTaskByID(@Param('id') id: string): Promise<void> {
+  deleteTaskByID(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    this.logger.verbose(`User: "${user.username}" Deleting the task id: ${id}`);
     return this.tasksService.deleteTaskById(id);
   }
 }
