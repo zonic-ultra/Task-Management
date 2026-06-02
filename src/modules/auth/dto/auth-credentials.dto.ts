@@ -8,6 +8,9 @@ import {
 
 export class RegisterUserDto {
   @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
   @IsEmail()
   username: string;
 

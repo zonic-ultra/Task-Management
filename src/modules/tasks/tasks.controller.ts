@@ -17,12 +17,11 @@ import {
   UpdateTaskStatusDto,
 } from './dto/tasks-request.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { EUserRole } from 'src/common/types.common';
 import { GetUser } from '../auth/get-user.decorators';
 import { User } from '../auth/user.entity';
 import { Logger } from '@nestjs/common';
 
-@UseGuards(AuthGuard())
+// @UseGuards(AuthGuard())
 @Controller('tasks')
 export class TasksController {
   private logger = new Logger('TaskController');
@@ -32,12 +31,12 @@ export class TasksController {
   @Get()
   getAllTasks(
     @Query() filterDto: GetTasksFilterDto,
-    @GetUser() user: User,
+    // @GetUser() user: User,
   ): Promise<Task[]> {
-    this.logger.verbose(
-      `User "${user.username}" retrieving all tasks. Filter: ${JSON.stringify(filterDto)}`,
-    );
-    return this.tasksService.getTasksWithFilters(filterDto, user);
+    // this.logger.verbose(
+    //   `User "${user.username}" retrieving all tasks. Filter: ${JSON.stringify(filterDto)}`,
+    // );
+    return this.tasksService.getTasksWithFilters(filterDto);
   }
 
   @Get('/:id')
@@ -49,12 +48,12 @@ export class TasksController {
   @Post('/create')
   createTask(
     @Body() createTaskDto: CreateTaskDto,
-    @GetUser() user: User,
+    // @GetUser() user: User,
   ): Promise<Task> {
-    this.logger.verbose(
-      `User: "${user.username}" Created a task: ${createTaskDto.title}`,
-    );
-    return this.tasksService.createTask(createTaskDto, user);
+    // this.logger.verbose(
+    //   `User: "${user.username}" Created a task: ${createTaskDto.title}`,
+    // );
+    return this.tasksService.createTask(createTaskDto);
   }
 
   @Patch('/:id/status')

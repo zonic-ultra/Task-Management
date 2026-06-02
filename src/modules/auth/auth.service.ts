@@ -21,7 +21,7 @@ export class AuthService {
   ) {}
 
   async register(authCredentialsDto: RegisterUserDto): Promise<void> {
-    const { username, password, role } = authCredentialsDto;
+    const { name, username, password, role } = authCredentialsDto;
 
     const existingUser = await this.userRepository.findOne({
       where: { username },
@@ -31,13 +31,14 @@ export class AuthService {
       throw new ConflictException('Username already exists');
     }
 
-    const salt = await bcrypt.genSalt();
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     console.log(salt);
     console.log(hashedPassword);
 
     const user = this.userRepository.create({
+      name,
       username,
       password: hashedPassword,
       role: role ? (role as EUserRole) : EUserRole.USER,

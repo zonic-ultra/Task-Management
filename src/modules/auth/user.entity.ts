@@ -7,6 +7,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: string;
 
+  @Column()
+  name: string;
+
   @Column({ unique: true })
   username: string;
 
@@ -19,3 +22,4 @@ export class User {
   @OneToMany((_type) => Task, (task) => task.user, { eager: true })
   task: Task[];
 }
+//  nkdeq0987754UYHGHJH#*cxgbvDLSVDL

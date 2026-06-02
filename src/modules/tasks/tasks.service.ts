@@ -26,14 +26,13 @@ export class TasksService {
     return await this.tasksRepository.find();
   }
 
-  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
 
     const task = this.tasksRepository.create({
       title,
       description,
       status: ETasksStatus.TODO,
-      user,
     });
 
     await this.tasksRepository.save(task);
@@ -79,12 +78,12 @@ export class TasksService {
 
   async getTasksWithFilters(
     filterDto: GetTasksFilterDto,
-    user: User,
+    // user: User,
   ): Promise<Task[]> {
     const { status, search } = filterDto;
 
     const query = this.tasksRepository.createQueryBuilder('task');
-    query.where({ user });
+    // query.where({ user });
 
     if (status) {
       query.andWhere('task.status = :status', { status });
