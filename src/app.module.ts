@@ -6,6 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidationSchema } from './config.schema';
 import { Task } from './modules/tasks/task.entity';
 import { User } from './modules/auth/user.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { ClaimsGuard } from './common/guards/claims.guard';
 
 @Module({
   imports: [
@@ -36,6 +38,12 @@ import { User } from './modules/auth/user.entity';
       }),
     }),
     AuthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ClaimsGuard,
+    },
   ],
 })
 export class AppModule {}

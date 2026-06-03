@@ -1,11 +1,13 @@
 import { EUserRole } from 'src/common/types.common';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Task } from '../tasks/task.entity';
+import { EActions } from '../tasks/claims/task-claims.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column()
   name: string;
@@ -21,5 +23,9 @@ export class User {
 
   @OneToMany((_type) => Task, (task) => task.user, { eager: true })
   task: Task[];
+
+  @Column('simple-array')
+  @IsEnum(EActions)
+  claims: string[];
 }
 //  nkdeq0987754UYHGHJH#*cxgbvDLSVDL

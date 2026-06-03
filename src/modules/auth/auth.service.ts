@@ -11,6 +11,7 @@ import { EUserRole } from 'src/common/types.common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
+import { EActions } from '../tasks/claims/task-claims.enum';
 
 @Injectable()
 export class AuthService {
@@ -37,11 +38,18 @@ export class AuthService {
     console.log(salt);
     console.log(hashedPassword);
 
+    const userRole = role ? (role as EUserRole) : EUserRole.USER;
+    const defaultClaims =
+      userRole === EUserRole.ADMIN
+        ? [EActions.CREATE, EActions.READ, EActions.UPDATE, EActions.DELETE]
+        : [EActions.READ];
+
     const user = this.userRepository.create({
       name,
       username,
       password: hashedPassword,
-      role: role ? (role as EUserRole) : EUserRole.USER,
+      role: userRole,
+      claims: defaultClaims,
     });
 
     await this.userRepository.save(user);
@@ -52,15 +60,44 @@ export class AuthService {
   ): Promise<{ accessToken: string }> {
     const { username, password } = authCredentialsDto;
 
-    const user = await this.userRepository.findOne({ where: { username } });
+    const user = await this.userRepository.findOne({
+      where: { username },
+    });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { username };
-      const accessToken: string = this.jwtService.sign(payload);
-      return { accessToken };
-    } else {
+    if (!user) {
       throw new UnauthorizedException('Please check your valid credentials!');
     }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Please check your valid credentials!');
+    }
+
+    let claims: EActions[];
+
+    if (user.role === EUserRole.ADMIN) {
+      claims = [
+        EActions.CREATE,
+        EActions.READ,
+        EActions.UPDATE,
+        EActions.DELETE,
+      ];
+    } else {
+      claims = [EActions.READ];
+    }
+
+    const payload: JwtPayload = {
+      username: user.username,
+      sub: user.id,
+      claims,
+    };
+
+    console.log('JWT Payload:', payload);
+
+    const accessToken = this.jwtService.sign(payload);
+
+    return { accessToken };
   }
 
   getAllUsers(): Promise<User[]> {
