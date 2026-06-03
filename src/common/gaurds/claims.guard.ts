@@ -8,6 +8,10 @@ import {
 import { Reflector } from '@nestjs/core';
 import { CLAIMS_KEY } from '../decorators/claims.decorator';
 import { EActions } from 'src/common/task-claims.enum';
+import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
+interface AuthClaimsRequest extends Request {
+  user: JwtPayload;
+}
 
 @Injectable()
 export class ClaimsGuard implements CanActivate {
@@ -23,7 +27,7 @@ export class ClaimsGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<AuthClaimsRequest>();
 
     const user = request.user;
 

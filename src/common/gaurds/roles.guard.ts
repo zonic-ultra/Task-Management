@@ -4,7 +4,10 @@ import { Reflector } from '@nestjs/core';
 
 import { ROLES_KEY } from 'src/common/decorators/roles.decorator';
 import { EUserRole } from '../types.common';
-
+import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
+interface AuthRoleRequest extends Request {
+  user: JwtPayload;
+}
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -19,11 +22,11 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<AuthRoleRequest>();
 
     const user = request.user;
 
-    console.log('User:', user);
+    console.log('User:', user.role);
     console.log('Required Roles:', requiredRoles);
 
     return requiredRoles.includes(user.role);
