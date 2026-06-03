@@ -22,7 +22,7 @@ import { User } from '../auth/user.entity';
 import { Logger } from '@nestjs/common';
 import { Claims } from 'src/common/decorators/claims.decorator';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
-import { EActions } from './claims/task-claims.enum';
+import { EActions } from '../../common/task-claims.enum';
 
 // @UseGuards(AuthGuard())
 @Controller('tasks')

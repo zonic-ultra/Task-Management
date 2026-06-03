@@ -7,7 +7,7 @@ import {
 
 import { Reflector } from '@nestjs/core';
 import { CLAIMS_KEY } from '../decorators/claims.decorator';
-import { EActions } from 'src/modules/tasks/claims/task-claims.enum';
+import { EActions } from 'src/common/task-claims.enum';
 
 @Injectable()
 export class ClaimsGuard implements CanActivate {

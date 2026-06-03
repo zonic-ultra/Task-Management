@@ -1,7 +1,7 @@
 import { EUserRole } from 'src/common/types.common';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Task } from '../tasks/task.entity';
-import { EActions } from '../tasks/claims/task-claims.enum';
+import { EActions } from '../../common/task-claims.enum';
 import { IsEnum } from 'class-validator';
 
 @Entity()

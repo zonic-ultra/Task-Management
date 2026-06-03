@@ -4,7 +4,7 @@ import { LoginUserDto, RegisterUserDto } from './dto/auth-credentials.dto';
 import { User } from './user.entity';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from './roles.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { EUserRole } from 'src/common/types.common';
 import { GetUser } from './get-user.decorators';
 import { RolesGuard } from 'src/common/gaurds/roles.guard';
@@ -24,13 +24,6 @@ export class AuthController {
   ): Promise<{ accessToken: string }> {
     return this.authService.login(authCredentialsDto);
   }
-
-  // @Get('/users')
-  // @UseGuards(RolesGuard)
-  // @Roles(EUserRole.ADMIN)
-  // getAllUsers(): Promise<User[]> {
-  //   return this.authService.getAllUsers();
-  // }
 
   @Get('/users')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
