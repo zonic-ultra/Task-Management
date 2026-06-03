@@ -7,7 +7,7 @@ import { configValidationSchema } from './config.schema';
 import { Task } from './modules/tasks/task.entity';
 import { User } from './modules/auth/user.entity';
 import { APP_GUARD } from '@nestjs/core';
-import { ClaimsGuard } from './common/guards/claims.guard';
+import { ClaimsGuard } from './common/gaurds/claims.guard';
 
 @Module({
   imports: [

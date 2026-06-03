@@ -21,7 +21,7 @@ import { GetUser } from '../auth/get-user.decorators';
 import { User } from '../auth/user.entity';
 import { Logger } from '@nestjs/common';
 import { Claims } from 'src/common/decorators/claims.decorator';
-import { ClaimsGuard } from 'src/common/guards/claims.guard';
+import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
 import { EActions } from './claims/task-claims.enum';
 
 // @UseGuards(AuthGuard())
