@@ -21,12 +21,14 @@ import { GetUser } from '../auth/get-user.decorators';
 import { User } from '../auth/user.entity';
 import { Logger } from '@nestjs/common';
 import { Claims } from 'src/common/decorators/claims.decorator';
-import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
-import { EActions } from '../../common/task-claims.enum';
 
-// @UseGuards(AuthGuard())
+import { RolesGuard } from 'src/common/gaurds/roles.guard';
+import { EActions } from './claims/task-claims.enum';
+import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
+
+@UseGuards(AuthGuard())
 @Controller('tasks')
-@UseGuards(AuthGuard(), ClaimsGuard)
+@UseGuards(AuthGuard(), RolesGuard, ClaimsGuard)
 export class TasksController {
   private logger = new Logger('TaskController');
 

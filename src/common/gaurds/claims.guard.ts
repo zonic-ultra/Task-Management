@@ -7,10 +7,14 @@ import {
 
 import { Reflector } from '@nestjs/core';
 import { CLAIMS_KEY } from '../decorators/claims.decorator';
-import { EActions } from 'src/common/task-claims.enum';
+import { EActions } from 'src/modules/tasks/claims/task-claims.enum';
 import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
-interface AuthClaimsRequest extends Request {
-  user: JwtPayload;
+import { Request } from 'express';
+
+interface ClaimsRequest extends Request {
+  user: JwtPayload & {
+    claims: EActions[];
+  };
 }
 
 @Injectable()
@@ -23,19 +27,23 @@ export class ClaimsGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    if (!requiredClaims) {
+    if (!requiredClaims?.length) {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<AuthClaimsRequest>();
+    const request = context.switchToHttp().getRequest<ClaimsRequest>();
 
     const user = request.user;
 
+    if (!user) {
+      throw new ForbiddenException('User not authenticated from claims');
+    }
+
     console.log('Required Claims:', requiredClaims);
-    console.log('User Claims:', user?.claims);
+    console.log('User Claims:', user.claims);
 
     const hasClaims = requiredClaims.every((claim) =>
-      user?.claims?.includes(claim),
+      user.claims.includes(claim),
     );
 
     if (!hasClaims) {

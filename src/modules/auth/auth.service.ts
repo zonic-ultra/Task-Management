@@ -11,7 +11,7 @@ import { EUserRole } from 'src/common/types.common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
-import { EActions } from '../../common/task-claims.enum';
+import { EActions } from '../tasks/claims/task-claims.enum';
 
 @Injectable()
 export class AuthService {

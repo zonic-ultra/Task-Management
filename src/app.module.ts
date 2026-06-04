@@ -8,6 +8,10 @@ import { Task } from './modules/tasks/task.entity';
 import { User } from './modules/auth/user.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { ClaimsGuard } from './common/gaurds/claims.guard';
+import { RolesGuard } from './common/gaurds/roles.guard';
+import { ROLES_KEY } from './common/decorators/roles.decorator';
+import { AuthGuard } from './auth/auth.guard';
+import { JwtAuthGuard } from './common/gaurds/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -40,6 +44,14 @@ import { ClaimsGuard } from './common/gaurds/claims.guard';
     AuthModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: ClaimsGuard,
