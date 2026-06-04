@@ -25,8 +25,6 @@ import { Claims } from 'src/common/decorators/claims.decorator';
 import { RolesGuard } from 'src/common/gaurds/roles.guard';
 import { EActions } from './claims/task-claims.enum';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
-
-@UseGuards(AuthGuard())
 @Controller('tasks')
 @UseGuards(AuthGuard(), RolesGuard, ClaimsGuard)
 export class TasksController {

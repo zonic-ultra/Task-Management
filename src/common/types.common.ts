@@ -6,5 +6,6 @@ export enum ETasksStatus {
 
 export enum EUserRole {
   USER = 'User',
+  MANAGER = 'Manager',
   ADMIN = 'Admin',
 }

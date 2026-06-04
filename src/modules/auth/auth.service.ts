@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
 import { EActions } from '../tasks/claims/task-claims.enum';
+import { ROLE_CLAIMS } from 'src/common/permissions/role-claims';
 
 @Injectable()
 export class AuthService {
@@ -39,10 +40,11 @@ export class AuthService {
     console.log(hashedPassword);
 
     const userRole = role ? (role as EUserRole) : EUserRole.USER;
-    const defaultClaims =
-      userRole === EUserRole.ADMIN
-        ? [EActions.CREATE, EActions.READ, EActions.UPDATE, EActions.DELETE]
-        : [EActions.READ];
+
+    const defaultClaims = ROLE_CLAIMS[userRole] ?? [];
+    // userRole === EUserRole.ADMIN
+    //   ? [EActions.CREATE, EActions.READ, EActions.UPDATE, EActions.DELETE]
+    //   : [EActions.READ];
 
     const user = this.userRepository.create({
       name,
@@ -74,18 +76,20 @@ export class AuthService {
       throw new UnauthorizedException('Please check your valid credentials!');
     }
 
-    let claims: EActions[];
+    const claims = ROLE_CLAIMS[user.role] ?? [];
 
-    if (user.role === EUserRole.ADMIN) {
-      claims = [
-        EActions.CREATE,
-        EActions.READ,
-        EActions.UPDATE,
-        EActions.DELETE,
-      ];
-    } else {
-      claims = [EActions.READ];
-    }
+    // if (user.role === EUserRole.ADMIN) {
+    //   claims = [
+    //     EActions.CREATE,
+    //     EActions.READ,
+    //     EActions.UPDATE,
+    //     EActions.DELETE,
+    //   ];
+    // } else if (user.role === EUserRole.MANAGER) {
+    //   claims = [EActions.CREATE, EActions.READ, EActions.UPDATE];
+    // } else {
+    //   claims = [EActions.READ];
+    // }
 
     const payload: JwtPayload = {
       username: user.username,
