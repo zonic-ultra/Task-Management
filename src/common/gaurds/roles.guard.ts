@@ -8,7 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 
 import { ROLES_KEY } from 'src/common/decorators/roles.decorator';
-import { EUserRole } from '../types.common';
+import { EUserRole } from '../enums/enum';
 import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
 interface AuthRoleRequest extends Request {
   user: JwtPayload;

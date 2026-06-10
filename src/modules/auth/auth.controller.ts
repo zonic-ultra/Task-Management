@@ -1,13 +1,15 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto, RegisterUserDto } from './dto/auth-credentials.dto';
-import { User } from './user.entity';
+import {
+  LoginUserDto,
+  RegisterUserDto,
+} from '../../common/dtos/auth-credentials.dto';
+import { User } from '../../common/entities/user.entity';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { EUserRole } from 'src/common/types.common';
+import { EUserRole } from 'src/common/enums/enum';
 import { RolesGuard } from 'src/common/gaurds/roles.guard';
-import { EActions } from '../tasks/claims/task-claims.enum';
 import { Claims } from 'src/common/decorators/claims.decorator';
 import { JwtAuthGuard } from 'src/common/gaurds/jwt-auth.guard';
 import { Public } from 'src/common/decorators/public.decorator';

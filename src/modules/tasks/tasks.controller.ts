@@ -10,22 +10,28 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task } from './task.entity';
-import {
-  CreateTaskDto,
-  GetTasksFilterDto,
-  UpdateTaskStatusDto,
-} from './dto/tasks-request.dto';
+import { Task } from '../../common/entities/task.entity';
+
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/get-user.decorators';
-import { User } from '../auth/user.entity';
+
 import { Logger } from '@nestjs/common';
 import { Claims } from 'src/common/decorators/claims.decorator';
 
 import { RolesGuard } from 'src/common/gaurds/roles.guard';
-import { EActions } from './claims/task-claims.enum';
+import { EActions } from '../../common/claims/task-claims.enum';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
+import { ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
+import { Public } from 'src/common/decorators/public.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
+import { User } from 'src/common/entities/user.entity';
+import {
+  CreateTaskDto,
+  GetTasksFilterDto,
+  UpdateTaskStatusDto,
+} from 'src/common/dtos/task.dto';
 @Controller('tasks')
+@ApiBearerAuth()
 @UseGuards(AuthGuard(), RolesGuard, ClaimsGuard)
 export class TasksController {
   private logger = new Logger('TaskController');
@@ -34,6 +40,8 @@ export class TasksController {
 
   @Get()
   @Claims(EActions.READ)
+  // @SkipThrottle({ default: true })
+  // @Public()
   getAllTasks(
     @Query() filterDto: GetTasksFilterDto,
     @GetUser() user: User,
@@ -47,7 +55,7 @@ export class TasksController {
   @Get('/:id')
   @Claims(EActions.READ)
   getTaskByID(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
-    this.logger.verbose(`User "${user.username}" retrieving specific tasks`);
+    this.logger.verbose(`User "${user.name}" retrieving specific tasks`);
     return this.tasksService.getTaskByID(id);
   }
 
@@ -55,12 +63,12 @@ export class TasksController {
   @Claims(EActions.CREATE)
   createTask(
     @Body() createTaskDto: CreateTaskDto,
-    @GetUser() user: User,
+    // @GetUser() user: User,
   ): Promise<Task> {
     // this.logger.verbose(
     //   `User: "${user.username}" Created a task: ${createTaskDto.title}`,
     // );
-    return this.tasksService.createTask(createTaskDto, user);
+    return this.tasksService.createTask(createTaskDto);
   }
 
   @Patch('/:id/status')

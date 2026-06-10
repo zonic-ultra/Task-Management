@@ -1,5 +1,5 @@
-import { EUserRole } from 'src/common/types.common';
-import { EActions } from '../tasks/claims/task-claims.enum';
+import { EUserRole } from 'src/common/enums/enum';
+import { EActions } from '../../common/claims/task-claims.enum';
 
 export interface JwtPayload {
   username: string;

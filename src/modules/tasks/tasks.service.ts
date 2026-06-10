@@ -2,22 +2,23 @@ import { Body, Injectable } from '@nestjs/common';
 import { v6 as uuid } from 'uuid';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from './task.entity';
+import { Task } from '../../common/entities/task.entity';
 import { Repository } from 'typeorm';
 import { logService } from 'src/common/util.common';
-import { ETasksStatus } from 'src/common/types.common';
+import { ETasksStatus } from 'src/common/enums/enum';
+
+import { NotFoundException } from 'src/exceptions/exception';
+import { User } from 'src/common/entities/user.entity';
 import {
   CreateTaskDto,
   GetTasksFilterDto,
   UpdateTaskStatusDto,
-} from './dto/tasks-request.dto';
-import { NotFoundException } from 'src/exceptions/exception';
-import { User } from '../auth/user.entity';
+} from 'src/common/dtos/task.dto';
 
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectRepository(Task)
+    @InjectRepository(Task, 'main_repo')
     private tasksRepository: Repository<Task>,
   ) {}
 
@@ -26,11 +27,10 @@ export class TasksService {
     return await this.tasksRepository.find();
   }
 
-  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
 
     const task = this.tasksRepository.create({
-      user,
       title,
       description,
       status: ETasksStatus.TODO,

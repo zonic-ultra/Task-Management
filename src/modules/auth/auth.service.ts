@@ -1,25 +1,34 @@
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import {
   ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginUserDto, RegisterUserDto } from './dto/auth-credentials.dto';
-import { EUserRole } from 'src/common/types.common';
+import {
+  LoginUserDto,
+  RegisterUserDto,
+} from '../../common/dtos/auth-credentials.dto';
+import { EUserRole } from 'src/common/enums/enum';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
-import { EActions } from '../tasks/claims/task-claims.enum';
 import { ROLE_CLAIMS } from 'src/common/permissions/role-claims';
+import { User } from 'src/common/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
+    // @InjectRepository(User)
+    // private userRepository: Repository<User>,
+    @InjectDataSource('main_repo')
+    private readonly dataSource: DataSource,
+
+    @InjectRepository(User, 'main_repo')
     private userRepository: Repository<User>,
-    private jwtService: JwtService,
+
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(authCredentialsDto: RegisterUserDto): Promise<void> {
@@ -39,7 +48,7 @@ export class AuthService {
     console.log(salt);
     console.log(hashedPassword);
 
-    const userRole = role ? (role as EUserRole) : EUserRole.USER;
+    const userRole = role ? (role as EUserRole) : EUserRole.MEMBER;
 
     const defaultClaims = ROLE_CLAIMS[userRole] ?? [];
     // userRole === EUserRole.ADMIN

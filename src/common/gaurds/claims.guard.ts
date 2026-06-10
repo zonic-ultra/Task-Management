@@ -7,7 +7,7 @@ import {
 
 import { Reflector } from '@nestjs/core';
 import { CLAIMS_KEY } from '../decorators/claims.decorator';
-import { EActions } from 'src/modules/tasks/claims/task-claims.enum';
+import { EActions } from 'src/common/claims/task-claims.enum';
 import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
 import { Request } from 'express';
 
