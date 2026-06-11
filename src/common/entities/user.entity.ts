@@ -7,9 +7,9 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { Task } from './task.entity';
+import { Tasks } from './task.entity';
 
-import { IsEnum } from 'class-validator';
+import { IsEmail, IsEnum } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { EActions } from '../claims/task-claims.enum';
 import { EUserRole } from 'src/common/enums/enum';
@@ -19,12 +19,13 @@ import { ProjectMember } from './project.meber.entity';
 @Entity('users')
 @Unique(['username'])
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column({ length: 100 })
   name: string;
 
+  @IsEmail()
   @Column({ length: 150, unique: true })
   username: string;
 
@@ -52,11 +53,12 @@ export class User {
   @OneToMany(() => ProjectMember, (pm) => pm.user)
   project_members: ProjectMember[];
 
-  @OneToMany(() => Task, (task) => task.assignee)
-  assigned_tasks: Task[];
+  @OneToMany(() => Tasks, (task) => task.assignee)
+  assigned_tasks: Tasks[];
 
-  @OneToMany(() => Task, (task) => task.creator)
-  created_tasks: Task[];
+  @OneToMany(() => Tasks, (task) => task.creator)
+  // @Exclude({ toPlainOnly: true })
+  created_tasks: Tasks[];
 
   // @OneToMany(() => Comment, (comment) => comment.user)
   // comments: Comment[];

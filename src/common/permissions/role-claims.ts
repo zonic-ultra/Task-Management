@@ -9,6 +9,6 @@ export const ROLE_CLAIMS: Record<EUserRole, EActions[]> = {
     EActions.UPDATE,
     EActions.DELETE,
   ],
-  [EUserRole.MEMBER]: [EActions.READ, EActions.UPDATE],
+  [EUserRole.MEMBER]: [EActions.CREATE, EActions.READ, EActions.UPDATE],
   [EUserRole.VIEWER]: [EActions.READ],
 };

@@ -3,7 +3,7 @@ import { DatabaseService } from './database.service';
 import { Module } from '@nestjs/common';
 import { configValidationSchema } from 'src/config.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Task } from '../entities/task.entity';
+import { Tasks } from '../entities/task.entity';
 import { User } from 'src/common/entities/user.entity';
 import { Project } from '../entities/project.entity';
 import { ProjectMember } from '../entities/project.meber.entity';
@@ -27,7 +27,7 @@ import { ProjectMember } from '../entities/project.meber.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [Task, User, Project, ProjectMember],
+        entities: [Tasks, User, Project, ProjectMember],
         timezone: 'Z',
       }),
     }),

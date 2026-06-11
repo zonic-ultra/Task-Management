@@ -5,14 +5,14 @@ import {
   RegisterUserDto,
 } from '../../common/dtos/auth-credentials.dto';
 import { User } from '../../common/entities/user.entity';
-import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { EUserRole } from 'src/common/enums/enum';
 import { RolesGuard } from 'src/common/gaurds/roles.guard';
-import { Claims } from 'src/common/decorators/claims.decorator';
 import { JwtAuthGuard } from 'src/common/gaurds/jwt-auth.guard';
 import { Public } from 'src/common/decorators/public.decorator';
+import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
+import { Claims } from 'src/common/decorators/claims.decorator';
+import { EActions } from 'src/common/claims/task-claims.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -33,9 +33,8 @@ export class AuthController {
   }
 
   @Get('/users')
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(EUserRole.ADMIN)
-  // @Claims(EActions.READ)
+  @Claims(EActions.READ)
   getAllUsers(): Promise<User[]> {
     return this.authService.getAllUsers();
   }

@@ -14,14 +14,14 @@ import { EProjectMemberRole } from '../enums/enum';
 @Entity('project_members')
 @Unique(['project_id', 'user_id'])
 export class ProjectMember {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @Column({ name: 'project_id' })
-  project_id: string;
+  project_id: number;
 
   @Column({ name: 'user_id' })
-  user_id: string;
+  user_id: number;
 
   @Column({
     type: 'enum',

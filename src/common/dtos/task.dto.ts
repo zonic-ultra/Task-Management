@@ -4,9 +4,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
 } from 'class-validator';
-import { ETasksStatus } from '../enums/enum';
+import { ETaskPriority, ETasksStatus } from '../enums/enum';
+import { Type } from 'class-transformer';
 
 export class CreateTaskDto {
   @IsString()
@@ -15,45 +15,43 @@ export class CreateTaskDto {
 
   @IsString()
   @IsOptional()
-  description?: string;
+  description: string;
 
-  @IsEnum(ETasksStatus)
+  @IsEnum(ETaskPriority)
   @IsOptional()
-  priority?: ETasksStatus;
+  priority: ETaskPriority;
 
-  @IsUUID()
   @IsOptional()
-  assignee_id?: string;
+  assignee_id: number;
 
-  @IsDateString()
   @IsOptional()
+  @Type(() => Date) // ← replace @IsDateString() with this
   due_date?: Date;
 }
 
 export class UpdateTaskDto {
   @IsString()
   @IsOptional()
-  title?: string;
+  title: string;
 
   @IsString()
   @IsOptional()
-  description?: string;
+  description: string;
 
   @IsEnum(ETasksStatus)
   @IsOptional()
-  status?: ETasksStatus;
+  status: ETasksStatus;
 
-  @IsEnum(ETasksStatus)
+  @IsEnum(ETaskPriority)
   @IsOptional()
-  priority?: ETasksStatus;
+  priority: ETaskPriority;
 
-  @IsUUID()
   @IsOptional()
-  assignee_id?: string;
+  assignee_id: number;
 
   @IsDateString()
   @IsOptional()
-  due_date?: Date;
+  due_date: Date;
 }
 
 export class UpdateTaskStatusDto {
@@ -65,9 +63,9 @@ export class UpdateTaskStatusDto {
 export class GetTasksFilterDto {
   @IsOptional()
   @IsEnum(ETasksStatus)
-  status?: ETasksStatus;
+  status: ETasksStatus;
 
   @IsOptional()
   @IsString()
-  search?: string;
+  search: string;
 }

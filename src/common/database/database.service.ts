@@ -47,7 +47,7 @@ export class DatabaseService implements OnApplicationBootstrap {
     try {
       const query = `
         CREATE TABLE IF NOT EXISTS projects (
-          id          CHAR(36)     NOT NULL DEFAULT (UUID()),
+          id          INT          NOT NULL AUTO_INCREMENT,
           title       VARCHAR(150) NOT NULL,
           description TEXT,
           status      ENUM('active', 'archived', 'completed') NOT NULL DEFAULT 'active',
@@ -71,8 +71,8 @@ export class DatabaseService implements OnApplicationBootstrap {
     try {
       const query = `
         CREATE TABLE IF NOT EXISTS project_members (
-          id         CHAR(36)  NOT NULL DEFAULT (UUID()),
-          project_id CHAR(36)  NOT NULL,
+          id         INT       NOT NULL AUTO_INCREMENT,
+          project_id INT       NOT NULL,
           user_id    INT       NOT NULL,
           role       ENUM('project_manager', 'member', 'viewer') NOT NULL DEFAULT 'member',
           joined_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -93,12 +93,12 @@ export class DatabaseService implements OnApplicationBootstrap {
     try {
       const query = `
         CREATE TABLE IF NOT EXISTS tasks (
-          id          CHAR(36)     NOT NULL DEFAULT (UUID()),
+          id          INT          NOT NULL AUTO_INCREMENT,
           title       VARCHAR(200) NOT NULL,
           description TEXT,
           status      ENUM('todo', 'in_progress', 'in_review', 'done') NOT NULL DEFAULT 'todo',
           priority    ENUM('low', 'medium', 'high', 'critical')        NOT NULL DEFAULT 'medium',
-          project_id  CHAR(36)     NOT NULL,
+          project_id  INT          NOT NULL,
           assignee_id INT          NULL,
           created_by  INT          NOT NULL,
           due_date    TIMESTAMP    NULL,
@@ -121,8 +121,8 @@ export class DatabaseService implements OnApplicationBootstrap {
     try {
       const query = `
         CREATE TABLE IF NOT EXISTS subtasks (
-          id         CHAR(36)     NOT NULL DEFAULT (UUID()),
-          task_id    CHAR(36)     NOT NULL,
+          id         INT          NOT NULL AUTO_INCREMENT,
+          task_id    INT          NOT NULL,
           title      VARCHAR(200) NOT NULL,
           status     ENUM('todo', 'in_progress', 'done') NOT NULL DEFAULT 'todo',
           created_by INT          NOT NULL,
@@ -143,18 +143,18 @@ export class DatabaseService implements OnApplicationBootstrap {
   async commentsTable() {
     try {
       const query = `
-          CREATE TABLE IF NOT EXISTS comments (
-            id         CHAR(36)  NOT NULL DEFAULT (UUID()),
-            task_id    CHAR(36)  NOT NULL,
-            user_id    INT       NOT NULL,
-            content    TEXT      NOT NULL,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            CONSTRAINT fk_comment_task FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
-            CONSTRAINT fk_comment_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-          );
-        `;
+        CREATE TABLE IF NOT EXISTS comments (
+          id         INT       NOT NULL AUTO_INCREMENT,
+          task_id    INT       NOT NULL,
+          user_id    INT       NOT NULL,
+          content    TEXT      NOT NULL,
+          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (id),
+          CONSTRAINT fk_comment_task FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+          CONSTRAINT fk_comment_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+      `;
       await this.dataSource.query(query);
       this.logger.log('comments table created successfully');
     } catch (error) {
@@ -204,21 +204,18 @@ export class DatabaseService implements OnApplicationBootstrap {
 
     for (const index of indexes) {
       try {
-        // Check if index already exists first
         const result = await this.dataSource.query(`
-              SELECT COUNT(*) as count
-              FROM information_schema.statistics
-              WHERE table_schema = DATABASE()
-              AND index_name = '${index.name}'
-            `);
+          SELECT COUNT(*) as count
+          FROM information_schema.statistics
+          WHERE table_schema = DATABASE()
+          AND index_name = '${index.name}'
+        `);
 
-        const exists = result[0].count > 0;
-
-        if (!exists) {
+        if (result[0].count > 0) {
+          this.logger.log(`Index ${index.name} already exists, skipping`);
+        } else {
           await this.dataSource.query(index.sql);
           this.logger.log(`Index ${index.name} created successfully`);
-        } else {
-          this.logger.log(`Index ${index.name} already exists, skipping`);
         }
       } catch (error) {
         this.logger.error(`Error creating index ${index.name}`, error);

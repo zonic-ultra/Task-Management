@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidationSchema } from './config.schema';
-import { Task } from './common/entities/task.entity';
+import { Tasks } from './common/entities/task.entity';
 import { User } from './common/entities/user.entity';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ClaimsGuard } from './common/gaurds/claims.guard';
@@ -97,7 +97,7 @@ import { PassportModule } from '@nestjs/passport';
       provide: APP_GUARD,
       useClass: ClaimsGuard,
     },
-    //logging
+    // logging
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,

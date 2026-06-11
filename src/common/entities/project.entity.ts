@@ -6,18 +6,17 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { EProjectStatus } from '../enums/enum';
 import { User } from './user.entity';
-import { Task } from './task.entity';
+import { Tasks } from './task.entity';
 import { ProjectMember } from './project.meber.entity';
 
 @Entity('projects')
 export class Project {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @Column({ length: 150 })
   title: string;
@@ -33,7 +32,7 @@ export class Project {
   status: EProjectStatus;
 
   @Column({ name: 'owner_id' })
-  owner_id: string;
+  owner_id: number;
 
   @Column({ type: 'timestamp', nullable: true })
   start_date: Date;
@@ -55,6 +54,6 @@ export class Project {
   @OneToMany(() => ProjectMember, (pm) => pm.project, { cascade: true })
   members: ProjectMember[];
 
-  @OneToMany(() => Task, (task) => task.project, { cascade: true })
-  tasks: Task[];
+  @OneToMany(() => Tasks, (task) => task.project, { cascade: true })
+  tasks: Tasks[];
 }

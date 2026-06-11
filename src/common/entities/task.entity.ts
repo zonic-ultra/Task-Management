@@ -14,7 +14,7 @@ import { Exclude } from 'class-transformer';
 import { User } from './user.entity';
 import { Project } from './project.entity';
 @Entity()
-export class Task {
+export class Tasks {
   // @PrimaryGeneratedColumn('uuid')
   // id: string;
 
@@ -31,8 +31,8 @@ export class Task {
   // @Exclude({ toPlainOnly: true })
   // user: User;
 
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @Column({ length: 200 })
   title: string;
@@ -47,13 +47,13 @@ export class Task {
   priority: ETaskPriority;
 
   @Column({ name: 'project_id' })
-  project_id: string;
+  project_id: number;
 
   @Column({ name: 'assignee_id', nullable: true })
-  assignee_id: string;
+  assignee_id: number;
 
   @Column({ name: 'created_by' })
-  created_by: string;
+  created_by: number;
 
   @Column({ type: 'timestamp', nullable: true })
   due_date: Date;
