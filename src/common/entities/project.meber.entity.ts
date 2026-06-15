@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Project } from './project.entity';
 import { User } from './user.entity';
-import { EProjectMemberRole } from '../enums/enum';
+import { EMemberRole } from '../enums/enum';
 
 @Entity('project_members')
 @Unique(['project_id', 'user_id'])
@@ -25,10 +25,10 @@ export class ProjectMember {
 
   @Column({
     type: 'enum',
-    enum: EProjectMemberRole,
-    default: EProjectMemberRole.MEMBER,
+    enum: EMemberRole,
+    default: EMemberRole.MEMBER,
   })
-  role: EProjectMemberRole;
+  role: EMemberRole;
 
   @CreateDateColumn()
   joined_at: Date;

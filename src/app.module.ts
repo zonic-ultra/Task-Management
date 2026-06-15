@@ -1,3 +1,4 @@
+import { MembersModule } from './modules/members/members.module';
 import { SubtasksModule } from './modules/subtasks/subtasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './common/database/database.module';
@@ -21,6 +22,7 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    MembersModule,
     SubtasksModule,
     UsersModule,
     DatabaseModule,

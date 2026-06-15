@@ -25,8 +25,13 @@ export enum EProjectStatus {
   COMPLETED = 'completed',
 }
 
-export enum EProjectMemberRole {
+export enum EMemberRole {
   PROJECT_MANAGER = 'project_manager',
   MEMBER = 'member',
   VIEWER = 'viewer',
 }
+
+// export enum EMemberRole {
+//   MEMBER = 'member',
+//   VIEWER = 'viewer',
+// }

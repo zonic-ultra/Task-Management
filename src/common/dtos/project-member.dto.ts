@@ -1,17 +1,25 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
-import { EProjectMemberRole } from '../enums/enum';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
+import { EMemberRole } from '../enums/enum';
 
-export class AddProjectMemberDto {
-  @IsUUID()
-  @IsNotEmpty()
-  user_id: string;
+export class AddMemberDto {
+  // @IsNotEmpty()
+  // user_id: string;
 
-  @IsEnum(EProjectMemberRole)
+  @IsEmail()
+  username: string;
+
+  @IsEnum(EMemberRole)
   @IsOptional()
-  role?: EProjectMemberRole;
+  role?: EMemberRole;
 }
 
-export class UpdateProjectMemberDto {
-  @IsEnum(EProjectMemberRole)
-  role: EProjectMemberRole;
+export class UpdateMemberDto {
+  @IsEnum(EMemberRole)
+  role: EMemberRole;
 }
