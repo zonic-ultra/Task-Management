@@ -74,10 +74,12 @@ export class Tasks {
     nullable: true,
   })
   @JoinColumn({ name: 'assignee_id' })
+  @Exclude({ toPlainOnly: true })
   assignee: User;
 
   @ManyToOne(() => User, (user) => user.created_tasks, { onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'created_by' })
+  @Exclude({ toPlainOnly: true })
   creator: User;
 
   // @OneToMany(() => Subtask, (subtask) => subtask.task, { cascade: true })

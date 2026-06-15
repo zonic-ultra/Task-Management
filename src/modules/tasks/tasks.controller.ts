@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   ParseIntPipe,
   Patch,
@@ -10,114 +11,103 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
 import { Tasks } from '../../common/entities/task.entity';
-
-import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/get-user.decorators';
-
-import { Logger } from '@nestjs/common';
 import { Claims } from 'src/common/decorators/claims.decorator';
-
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/gaurds/roles.guard';
-import { EActions } from '../../common/claims/task-claims.enum';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
-import { ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
-import { Public } from 'src/common/decorators/public.decorator';
-import { SkipThrottle } from '@nestjs/throttler';
+import { EActions } from '../../common/claims/task-claims.enum';
+import { EUserRole } from 'src/common/enums/enum';
 import { User } from 'src/common/entities/user.entity';
 import {
   CreateTaskDto,
   GetTasksFilterDto,
   UpdateTaskStatusDto,
 } from 'src/common/dtos/task.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { EUserRole } from 'src/common/enums/enum';
+import { Public } from 'src/common/decorators/public.decorator';
+
 @ApiBearerAuth()
-@Controller('projects/:pro_id/tasks')
+@UseGuards(RolesGuard, ClaimsGuard)
+@Controller('projects/:projectId/tasks')
 export class TasksController {
-  private logger = new Logger('TaskController');
+  private logger = new Logger(TasksController.name);
 
   constructor(private readonly tasksService: TasksService) {}
 
+  // GET /projects/1/tasks?status=todo&search=login
+
   // @Get()
-  // // @Claims(EActions.READ)
-  // // @SkipThrottle({ default: true })
-  // @Public()
+  // @Roles(EUserRole.PROJECT_MANAGER, EUserRole.MEMBER)
+  // @Claims(EActions.READ)
+  // // @Public()
   // getAllTasks(
+  //   @Param('projectId', ParseIntPipe) projectId: number,
   //   @Query() filterDto: GetTasksFilterDto,
   //   @GetUser() user: User,
   // ): Promise<Tasks[]> {
-  //   // this.logger.verbose(
-  //   //   `User "${user.username}" retrieving all tasks. Filter: ${JSON.stringify(filterDto)}`,
-  //   // );
-  //   return this.tasksService.getTasksWithFilters(filterDto, user);
+  //   this.logger.verbose(
+  //     `User "${user.username}" retrieving tasks for project ${projectId}`,
+  //   );
+  //   return this.tasksService.getTasksWithFilters(projectId, filterDto, user);
   // }
-
-  @Get('_')
-  getAll(): Promise<Tasks[]> {
-    return this.tasksService.getAllTasks();
-  }
-  @Get('my-tasks')
-  getMyTasks(@GetUser() user: number): Promise<Tasks[]> {
-    return this.tasksService.getMyTask(user);
-  }
-
   @Get()
-  @Roles(
-    // EUserRole.ADMIN,
-    EUserRole.PROJECT_MANAGER,
-    EUserRole.MEMBER,
-    // EUserRole.VIEWER,
-  )
-  getAllByPro(@Param('pro_id', ParseIntPipe) pro_id: number) {
-    return this.tasksService.getTasksByProject(pro_id);
+  @Roles(EUserRole.PROJECT_MANAGER, EUserRole.MEMBER)
+  getMyTasks(@GetUser() assignee_id: User): Promise<Tasks[]> {
+    return this.tasksService.getMyTasksOnProject(assignee_id);
   }
-  @Get('/:id')
+
+  // GET /projects/1/tasks/5
+  @Get(':id')
+  @Roles(EUserRole.PROJECT_MANAGER, EUserRole.MEMBER)
   @Claims(EActions.READ)
-  getTaskByID(
+  getOne(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ): Promise<Tasks> {
-    this.logger.verbose(`User "${user.name}" retrieving specific tasks`);
+    this.logger.verbose(`User "${user.username}" retrieving task ${id}`);
     return this.tasksService.getTaskByID(id);
   }
 
+  // POST /projects/1/tasks
   @Post()
+  @Roles(EUserRole.PROJECT_MANAGER, EUserRole.MEMBER)
   @Claims(EActions.CREATE)
-  @Roles(EUserRole.PROJECT_MANAGER)
   createTask(
+    @Param('projectId', ParseIntPipe) projectId: number,
     @Body() createTaskDto: CreateTaskDto,
-    @Param('pro_id', ParseIntPipe) pro_id: number,
-    @GetUser() cre_by: User,
+    @GetUser() user: User,
   ): Promise<Tasks> {
-    // this.logger.verbose(
-    //   `User: "${cre_by}" Created a task: ${createTaskDto.title}`,
-    // );
-    // console.log(cre_by);
-    return this.tasksService.createTask(createTaskDto, pro_id, cre_by);
+    this.logger.verbose(
+      `User "${user.username}" creating task "${createTaskDto.title}"`,
+    );
+    return this.tasksService.createTask(createTaskDto, projectId, user);
   }
 
-  @Patch('/:id/status')
+  // PATCH /projects/1/tasks/5/status
+  @Patch(':id/status')
+  @Roles(EUserRole.PROJECT_MANAGER, EUserRole.MEMBER)
   @Claims(EActions.UPDATE)
   updateTaskStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body() update: UpdateTaskStatusDto,
     @GetUser() user: User,
   ): Promise<Tasks> {
-    this.logger.verbose(
-      `User "${user.username}" updating status to ${update.status}`,
-    );
-    return this.tasksService.updateTaskStatus(id, update);
+    this.logger.verbose(`User "${user.username}" updating task ${id} status`);
+    return this.tasksService.updateTaskStatus(id, update, user);
   }
 
-  @Delete('/:id')
+  // DELETE /projects/1/tasks/5
+  @Delete(':id')
+  @Roles(EUserRole.ADMIN, EUserRole.PROJECT_MANAGER)
   @Claims(EActions.DELETE)
   deleteTaskByID(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
   ): Promise<void> {
-    this.logger.verbose(`User: "${user.username}" Deleting the task id: ${id}`);
-    return this.tasksService.deleteTaskById(id);
+    this.logger.verbose(`User "${user.username}" deleting task ${id}`);
+    return this.tasksService.deleteTaskById(id, user);
   }
 }

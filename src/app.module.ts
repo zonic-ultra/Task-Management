@@ -1,3 +1,5 @@
+import { SubtasksModule } from './modules/subtasks/subtasks.module';
+import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './common/database/database.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { Module } from '@nestjs/common';
@@ -5,7 +7,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configValidationSchema } from './config.schema';
+import { configValidationSchema } from './common/database/config.schema';
 import { Tasks } from './common/entities/task.entity';
 import { User } from './common/entities/user.entity';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -19,6 +21,8 @@ import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
+    SubtasksModule,
+    UsersModule,
     DatabaseModule,
     ProjectsModule,
     TasksModule,

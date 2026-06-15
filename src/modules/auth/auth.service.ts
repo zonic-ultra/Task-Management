@@ -114,7 +114,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  getAllUsers(): Promise<User[]> {
-    return this.userRepository.find();
-  }
+  // getAllUsers(): Promise<User[]> {
+  //   return this.userRepository.find();
+  // }
 }

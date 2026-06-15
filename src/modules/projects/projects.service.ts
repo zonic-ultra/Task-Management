@@ -73,4 +73,10 @@ export class ProjectsService {
     }
     return project;
   }
+
+  async deletePro(id: number): Promise<void> {
+    const project = await this.findById(id);
+
+    await this.projectRepo.delete(project.id);
+  }
 }

@@ -5,6 +5,7 @@ https://docs.nestjs.com/controllers#controllers
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -26,6 +27,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/common/entities/user.entity';
 import { GetUser } from '../auth/get-user.decorators';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Claims } from 'src/common/decorators/claims.decorator';
+import { EActions } from 'src/common/claims/task-claims.enum';
 @ApiBearerAuth()
 @Controller('projects')
 export class ProjectsController {
@@ -46,12 +49,19 @@ export class ProjectsController {
     return this.proSer.createProject(owner_id, create);
   }
 
-  @Put('/:id')
+  @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProjectDto,
     @GetUser() owner_id: User,
   ): Promise<Project> {
     return this.proSer.update(id, updateDto, owner_id.id);
+  }
+
+  @Delete(':id')
+  @Claims(EActions.DELETE)
+  @Roles(EUserRole.PROJECT_MANAGER)
+  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.proSer.deletePro(id);
   }
 }

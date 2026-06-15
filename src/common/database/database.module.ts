@@ -1,7 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseService } from './database.service';
 import { Module } from '@nestjs/common';
-import { configValidationSchema } from 'src/config.schema';
+import { configValidationSchema } from 'src/common/database/config.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Tasks } from '../entities/task.entity';
 import { User } from 'src/common/entities/user.entity';

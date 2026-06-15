@@ -3,7 +3,11 @@ import { AppModule } from './app.module';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './common/transform.interceptor';
 import { Logger } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 async function bootstrap() {
   const logger = new Logger();
@@ -22,8 +26,41 @@ async function bootstrap() {
     .setDescription('The API description')
     .setVersion('1.0')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+
+  // Swagger Document Options
+  const options: SwaggerDocumentOptions = {
+    // Include specific modules (optional)
+    // include: [TasksModule, UsersModule],
+
+    // Extra models that might not be auto-detected
+    // extraModels: [YourResponseDto, PaginationDto],
+
+    ignoreGlobalPrefix: false,
+    deepScanRoutes: true, // Recommended: scans imported modules too
+    autoTagControllers: true, // Auto-generates tags from controller names
+
+    // Custom operation ID (cleaner than default)
+    operationIdFactory: (
+      controllerKey: string,
+      methodKey: string,
+      version?: string,
+    ) => `${controllerKey}_${methodKey}`,
+  };
+
+  // Create document with options
+  const document = SwaggerModule.createDocument(app, config, options);
+
+  // === Export Swagger JSON file ===
+
+  SwaggerModule.setup('api', app, document, {
+    jsonDocumentUrl: 'api-json', // Access full JSON at /api-json
+    yamlDocumentUrl: 'api-yaml', // Optional: YAML version
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

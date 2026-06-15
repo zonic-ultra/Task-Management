@@ -13,7 +13,9 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { ClaimsGuard } from 'src/common/gaurds/claims.guard';
 import { Claims } from 'src/common/decorators/claims.decorator';
 import { EActions } from 'src/common/claims/task-claims.enum';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -32,10 +34,10 @@ export class AuthController {
     return this.authService.login(authCredentialsDto);
   }
 
-  @Get('/users')
-  @Roles(EUserRole.ADMIN)
-  @Claims(EActions.READ)
-  getAllUsers(): Promise<User[]> {
-    return this.authService.getAllUsers();
-  }
+  // @Get('/users')
+  // @Roles(EUserRole.ADMIN)
+  // @Claims(EActions.READ)
+  // getAllUsers(): Promise<User[]> {
+  //   return this.authService.getAllUsers();
+  // }
 }
