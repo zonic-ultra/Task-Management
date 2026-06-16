@@ -10,7 +10,7 @@ import {
 import { Tasks } from './task.entity';
 
 import { IsEmail, IsEnum } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { EActions } from '../claims/task-claims.enum';
 import { EUserRole } from 'src/common/enums/enum';
 import { Project } from './project.entity';
@@ -41,9 +41,17 @@ export class User {
   claims: string[]; // ← was string[], now EActions[]
 
   @CreateDateColumn()
+  @Transform(({ value }) => {
+    const d = new Date(value);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  })
   created_at: Date;
 
   @UpdateDateColumn()
+  @Transform(({ value }) => {
+    const d = new Date(value);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  })
   updated_at: Date;
 
   // Relations

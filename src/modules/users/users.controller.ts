@@ -22,16 +22,15 @@ export class UsersController {
   @Public()
   //   @Roles(EUserRole.ADMIN)
   //   @Claims(EActions.READ)
-  getUsers(): Promise<User[]> {
+  getUsers() {
     const list = this.userService.users();
-
     return list;
   }
 
   @Roles(EUserRole.ADMIN)
   @Claims(EActions.DELETE)
   @Delete(':id')
-  delUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  delUser(@Param('id', ParseIntPipe) id: number) {
     return this.userService.deleteUser(id);
   }
 }

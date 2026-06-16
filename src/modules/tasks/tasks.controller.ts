@@ -94,8 +94,7 @@ export class TasksController {
     @Param('id', ParseIntPipe) id: number,
     @Body() update: UpdateTaskStatusDto,
     @GetUser() user: User,
-  ): Promise<Tasks> {
-    this.logger.verbose(`User "${user.username}" updating task ${id} status`);
+  ) {
     return this.tasksService.updateTaskStatus(id, update, user);
   }
 
@@ -103,11 +102,7 @@ export class TasksController {
   @Delete(':id')
   @Roles(EUserRole.ADMIN, EUserRole.PROJECT_MANAGER)
   @Claims(EActions.DELETE)
-  deleteTaskByID(
-    @Param('id', ParseIntPipe) id: number,
-    @GetUser() user: User,
-  ): Promise<void> {
-    this.logger.verbose(`User "${user.username}" deleting task ${id}`);
+  deleteTaskByID(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
     return this.tasksService.deleteTaskById(id, user);
   }
 }

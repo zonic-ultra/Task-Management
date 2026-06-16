@@ -22,8 +22,10 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .addBearerAuth()
-    .setTitle('Task API')
-    .setDescription('The API description')
+    .setTitle('Lorem API')
+    .setDescription(
+      ' Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus quas esse sint, accusamus quasi asperiores, perspiciatis harum ut similique voluptatibus cumque nisi molestias ex, excepturi id. Minima nulla distinctio veritatis.',
+    )
     .setVersion('1.0')
     .build();
 

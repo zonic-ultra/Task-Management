@@ -36,16 +36,13 @@ export class ProjectsController {
 
   @Get()
   @Roles(EUserRole.PROJECT_MANAGER, EUserRole.ADMIN)
-  getAll(@GetUser() owner_id: User): Promise<Project[]> {
+  getAll(@GetUser() owner_id: User) {
     return this.proSer.getProjects(owner_id);
   }
 
   @Roles(EUserRole.ADMIN, EUserRole.PROJECT_MANAGER)
   @Post('/create')
-  createProject(
-    @GetUser() owner_id: number,
-    @Body() create: CreateProjectDto,
-  ): Promise<Project> {
+  createProject(@GetUser() owner_id: number, @Body() create: CreateProjectDto) {
     return this.proSer.createProject(owner_id, create);
   }
 
@@ -54,14 +51,14 @@ export class ProjectsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProjectDto,
     @GetUser() owner_id: User,
-  ): Promise<Project> {
+  ) {
     return this.proSer.update(id, updateDto, owner_id.id);
   }
 
   @Delete(':id')
   @Claims(EActions.DELETE)
   @Roles(EUserRole.PROJECT_MANAGER)
-  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  delete(@Param('id', ParseIntPipe) id: number) {
     return this.proSer.deletePro(id);
   }
 }

@@ -12,6 +12,7 @@ import { EProjectStatus } from '../enums/enum';
 import { User } from './user.entity';
 import { Tasks } from './task.entity';
 import { ProjectMember } from './project.meber.entity';
+import { Transform } from 'class-transformer';
 
 @Entity('projects')
 export class Project {
@@ -35,15 +36,31 @@ export class Project {
   owner_id: number;
 
   @Column({ type: 'timestamp', nullable: true })
+  @Transform(({ value }) => {
+    const d = new Date(value);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  })
   start_date: Date;
 
   @Column({ type: 'timestamp', nullable: true })
+  @Transform(({ value }) => {
+    const d = new Date(value);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  })
   end_date: Date;
 
   @CreateDateColumn()
+  @Transform(({ value }) => {
+    const d = new Date(value);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  })
   created_at: Date;
 
   @UpdateDateColumn()
+  @Transform(({ value }) => {
+    const d = new Date(value);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  })
   updated_at: Date;
 
   // Relations
