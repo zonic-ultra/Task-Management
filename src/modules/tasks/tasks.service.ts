@@ -81,11 +81,10 @@ export class TasksService {
   ): Promise<Tasks> {
     const task = await this.getTaskByID(id);
 
-    const isAdminOrPM =
-      user.role === EUserRole.ADMIN || user.role === EUserRole.PROJECT_MANAGER;
+    const isPM = user.role === EUserRole.PROJECT_MANAGER;
     const isAssignee = task.assignee_id === user.id;
 
-    if (!isAdminOrPM && !isAssignee) {
+    if (!isPM && !isAssignee) {
       throw new ForbiddenException(
         'You are not allowed to update this task status',
       );

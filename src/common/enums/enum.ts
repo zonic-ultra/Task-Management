@@ -30,8 +30,3 @@ export enum EMemberRole {
   MEMBER = 'member',
   VIEWER = 'viewer',
 }
-
-// export enum EMemberRole {
-//   MEMBER = 'member',
-//   VIEWER = 'viewer',
-// }
