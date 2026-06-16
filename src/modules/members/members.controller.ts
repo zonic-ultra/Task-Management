@@ -56,6 +56,7 @@ export class MembersController {
   }
 
   @Patch(':id')
+  @Roles(EUserRole.PROJECT_MANAGER)
   updateMember(
     @Param('id', ParseIntPipe) id: number,
     @Body() update: UpdateMemberDto,
@@ -65,6 +66,7 @@ export class MembersController {
   }
 
   @Delete(':id')
+  @Roles(EUserRole.PROJECT_MANAGER)
   removeMember(@Param('id') id: number, @GetUser() user: User) {
     return this.memberService.deleteMember(id, user);
   }
