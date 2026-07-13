@@ -15,6 +15,7 @@ import { EActions } from '../claims/task-claims.enum';
 import { EUserRole } from 'src/common/enums/enum';
 import { Project } from './project.entity';
 import { ProjectMember } from './project.meber.entity';
+import { transformDateToISOString } from 'src/utils/common.helper';
 
 @Entity('users')
 @Unique(['username'])
@@ -29,8 +30,8 @@ export class User {
   @Column({ length: 150, unique: true })
   username: string;
 
-  @Exclude()
   @Column({ name: 'password' })
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column()
@@ -41,17 +42,11 @@ export class User {
   claims: string[]; // ← was string[], now EActions[]
 
   @CreateDateColumn()
-  @Transform(({ value }) => {
-    const d = new Date(value);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  })
+  @Transform(transformDateToISOString)
   created_at: Date;
 
   @UpdateDateColumn()
-  @Transform(({ value }) => {
-    const d = new Date(value);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  })
+  @Transform(transformDateToISOString)
   updated_at: Date;
 
   // Relations

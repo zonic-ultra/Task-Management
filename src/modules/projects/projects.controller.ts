@@ -49,6 +49,16 @@ export class ProjectsController {
   ) {
     await this.proSer.getProjects(dto, req, res);
   }
+
+  @Get('/single')
+  @Roles(EUserRole.PROJECT_MANAGER)
+  async getOne(
+    @Body() dto: GetProjectDto,
+    @Req() req: ICustomRequest,
+    @Res() res: Response,
+  ) {
+    await this.proSer.getProjects(dto, req, res);
+  }
   @Roles(EUserRole.PROJECT_MANAGER)
   @Claims(EActions.CREATE)
   @Post('/create')

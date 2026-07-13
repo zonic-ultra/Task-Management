@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsEnum,
@@ -44,4 +45,11 @@ export class UpdatePasswordDto {
   @IsString()
   @MinLength(8)
   new_password: string;
+}
+
+export class GetUsersDto {
+  @ApiProperty({ description: 'id', required: false })
+  @IsOptional()
+  // @IsString()
+  id?: number;
 }

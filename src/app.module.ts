@@ -1,3 +1,4 @@
+import { RedisUtilModule } from './common/redis/redis-util.module';
 import { MembersModule } from './modules/members/members.module';
 import { SubtasksModule } from './modules/subtasks/subtasks.module';
 import { UsersModule } from './modules/users/users.module';
@@ -6,7 +7,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { Module } from '@nestjs/common';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ClaimsGuard } from './common/gaurds/claims.guard';
 import { RolesGuard } from './common/gaurds/roles.guard';
@@ -17,9 +18,18 @@ import { LoggingInterceptor } from './common/logging.interceptor';
 import { PassportModule } from '@nestjs/passport';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ScheduleModule as AppScheduleModule } from './schedule/schedule.module';
+import { configValidationSchema } from './common/database/config.schema';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.stage.${process.env.STAGE}`],
+      validationSchema: configValidationSchema,
+      cache: true,
+      expandVariables: true,
+    }),
+    RedisUtilModule,
     MembersModule,
     SubtasksModule,
     UsersModule,
@@ -28,12 +38,6 @@ import { ScheduleModule as AppScheduleModule } from './schedule/schedule.module'
     TasksModule,
     HealthModule,
     AuthModule,
-    ConfigModule,
-
-    //   ConfigModule.forRoot({
-    //     envFilePath: [`.env.stage.${process.env.STAGE}`],
-    //     validationSchema: configValidationSchema,
-    //   }),
     //   TasksModule,
     //   // TypeOrmModule.forRoot({
     //   //   type: 'mysql',

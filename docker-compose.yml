@@ -5,13 +5,15 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-task-management
     ports:
-      - '5000:5000'
+      - '3000:3000'
     env_file:
       - .env.stage.docker
     environment:
       - STAGE=docker
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - task-network
@@ -29,6 +31,20 @@ services:
       - mysql_data:/var/lib/mysql
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - task-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: task-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
