@@ -8,15 +8,19 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+// import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const logger = new Logger();
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: ['https://tasks-tracker-kappa.vercel.app', 'http://localhost:3000'], // origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
+    exposedHeaders: ['x-auth-token'], // ← add this
+    // allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
   // app.enableCors();
 
@@ -85,6 +89,7 @@ async function bootstrap() {
       },
     }),
   );
+  // app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.useGlobalInterceptors(new TransformInterceptor());
 

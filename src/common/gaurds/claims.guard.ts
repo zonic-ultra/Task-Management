@@ -8,8 +8,10 @@ import {
 import { Reflector } from '@nestjs/core';
 import { CLAIMS_KEY } from '../decorators/claims.decorator';
 import { EActions } from 'src/common/claims/task-claims.enum';
+import { ErrorCode } from 'src/common/enums/enum';
 import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
 import { Request } from 'express';
+import { ERROR_MESSAGES } from 'src/utils/error.message.constant';
 
 interface ClaimsRequest extends Request {
   user: JwtPayload & {
@@ -36,7 +38,10 @@ export class ClaimsGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      throw new ForbiddenException('User not authenticated from claims');
+      throw new ForbiddenException({
+        code: ErrorCode.MISSING_AUTH_CLAIMS,
+        message: ERROR_MESSAGES[ErrorCode.MISSING_AUTH_CLAIMS],
+      });
     }
 
     console.log('Required Claims:', requiredClaims);
@@ -47,7 +52,10 @@ export class ClaimsGuard implements CanActivate {
     );
 
     if (!hasClaims) {
-      throw new ForbiddenException('Missing required claim');
+      throw new ForbiddenException({
+        code: ErrorCode.FORBIDDEN_PERMISSION,
+        message: ERROR_MESSAGES[ErrorCode.FORBIDDEN_PERMISSION],
+      });
     }
 
     return true;

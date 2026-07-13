@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-task-management
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env.stage.docker
+    environment:
+      - STAGE=docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - task-network
+
+  mysql:
+    image: mysql:8
+    container_name: task-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: task_management
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - task-network
+
+volumes:
+  mysql_data:
+
+networks:
+  task-network:
+    driver: bridge

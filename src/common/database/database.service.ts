@@ -204,7 +204,7 @@ export class DatabaseService implements OnApplicationBootstrap {
 
     for (const index of indexes) {
       try {
-        const result = await this.dataSource.query(`
+        const result: [{ count: number }] = await this.dataSource.query(`
           SELECT COUNT(*) as count
           FROM information_schema.statistics
           WHERE table_schema = DATABASE()

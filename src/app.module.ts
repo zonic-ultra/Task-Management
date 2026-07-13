@@ -5,12 +5,8 @@ import { DatabaseModule } from './common/database/database.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { Module } from '@nestjs/common';
 import { TasksModule } from './modules/tasks/tasks.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configValidationSchema } from './common/database/config.schema';
-import { Tasks } from './common/entities/task.entity';
-import { User } from './common/entities/user.entity';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ClaimsGuard } from './common/gaurds/claims.guard';
 import { RolesGuard } from './common/gaurds/roles.guard';
@@ -19,6 +15,8 @@ import { HealthModule } from './health/health.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggingInterceptor } from './common/logging.interceptor';
 import { PassportModule } from '@nestjs/passport';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleModule as AppScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -68,6 +66,9 @@ import { PassportModule } from '@nestjs/passport';
         },
       ],
     }),
+
+    AppScheduleModule,
+    ScheduleModule.forRoot(),
     // ],
     //     inject: [ConfigService],
     //     useFactory: (configService: ConfigService) => ({

@@ -3,7 +3,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HttpModule } from '@nestjs/axios';
 import { HealthController } from './health.controller';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm'; // ← add
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'; // ← add
     }),
     HttpModule,
     ConfigModule,
-    TypeOrmModule.forFeature([], 'main_repo'), // ← add
+    TypeOrmModule.forFeature([], 'main_repo'),
   ],
   controllers: [HealthController],
 })

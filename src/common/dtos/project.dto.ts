@@ -1,15 +1,17 @@
-import {
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EProjectStatus } from '../enums/enum';
-import { Type } from 'class-transformer';
+import { IsCustomDate, IsFutureDate } from 'src/utils/common.helper';
 
 export class CreateProjectDto {
+  @ApiProperty({
+    example: 1,
+    description: 'Target user id (for ADMIN/PROJECT_MANAGER)',
+    required: false,
+  })
+  @IsOptional()
+  id?: number;
+
   @ApiProperty({
     example: 'E-commerce Platform Redesign',
     description: 'Project title',
@@ -30,27 +32,39 @@ export class CreateProjectDto {
   description: string;
 
   @ApiProperty({
-    example: '2026-07-01T00:00:00Z',
+    example: '2026-07-13',
     description: 'Project start date',
-    format: 'date-time',
+    format: 'date',
     required: false,
   })
   @IsOptional()
-  @Type(() => Date)
-  start_date: Date;
+  @IsCustomDate()
+  @IsFutureDate()
+  @IsString()
+  start_date: string;
 
   @ApiProperty({
-    example: '2026-12-15T00:00:00Z',
+    example: '2026-07-14',
     description: 'Project end date',
-    format: 'date-time',
+    format: 'date',
     required: false,
   })
   @IsOptional()
-  @Type(() => Date)
-  end_date: Date;
+  @IsCustomDate()
+  @IsFutureDate()
+  @IsString()
+  end_date: string;
 }
 
 export class UpdateProjectDto {
+  @ApiProperty({
+    example: 28,
+    description: 'ID of the project to update',
+    required: true,
+  })
+  @IsOptional()
+  id?: number;
+
   @ApiProperty({
     example: 'E-commerce Platform Redesign - Phase 2',
     description: 'Updated project title',
@@ -80,22 +94,31 @@ export class UpdateProjectDto {
   status: EProjectStatus;
 
   @ApiProperty({
-    example: '2026-07-10T00:00:00Z',
+    example: '2026-07-13',
     description: 'Updated project start date',
     format: 'date-time',
     required: false,
   })
   @IsOptional()
-  @Type(() => Date)
-  start_date: Date;
+  @IsString()
+  @IsFutureDate()
+  start_date: string;
 
   @ApiProperty({
-    example: '2026-11-30T00:00:00Z',
+    example: '2026-11-14',
     description: 'Updated project end date',
     format: 'date-time',
     required: false,
   })
   @IsOptional()
-  @Type(() => Date)
-  end_date: Date;
+  @IsString()
+  @IsFutureDate()
+  end_date: string;
+}
+
+export class GetProjectDto {
+  @ApiProperty({ description: 'id', required: false })
+  @IsOptional()
+  // @IsString()
+  id?: number;
 }

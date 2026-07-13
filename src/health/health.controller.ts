@@ -1,4 +1,5 @@
 import { Controller, Get, Logger, UseInterceptors } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import {
@@ -33,10 +34,20 @@ export class HealthController {
   check() {
     return this.health.check([
       () =>
-        this.db.pingCheck(
-          this.configService.get('DB_DATABASE') ?? 'task_management',
-          { connection: this.dataSource }, // ← pass named connection
-        ),
+        this.db.pingCheck(this.configService.get('DB_DATABASE') ?? 'System', {
+          connection: this.dataSource,
+        }),
     ]);
+  }
+
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async logHealthStatus() {
+    const result = await this.health.check([
+      () =>
+        this.db.pingCheck(this.configService.get('DB_DATABASE') ?? 'System', {
+          connection: this.dataSource,
+        }),
+    ]);
+    this.logger.log(`Health status: ${result.status}`);
   }
 }

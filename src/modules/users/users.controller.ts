@@ -20,8 +20,8 @@ export class UsersController {
 
   @Get()
   @Public()
-  //   @Roles(EUserRole.ADMIN)
-  //   @Claims(EActions.READ)
+  @Roles(EUserRole.ADMIN)
+  @Claims(EActions.READ)
   getUsers() {
     const list = this.userService.users();
     return list;

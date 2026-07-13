@@ -48,7 +48,7 @@ export class AuthService {
     console.log(salt);
     console.log(hashedPassword);
 
-    const userRole = role ? (role as EUserRole) : EUserRole.MEMBER;
+    const userRole = role ?? EUserRole.MEMBER;
 
     const defaultClaims = ROLE_CLAIMS[userRole] ?? [];
     // userRole === EUserRole.ADMIN
@@ -101,9 +101,11 @@ export class AuthService {
     // }
 
     const payload: JwtPayload = {
+      // id: user.id.toString(),
+      name: user.name,
       username: user.username,
       role: user.role,
-      sub: user.id,
+      id: user.id,
       claims,
     };
 

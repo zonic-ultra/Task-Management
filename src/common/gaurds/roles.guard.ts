@@ -8,10 +8,13 @@ import {
 import { Reflector } from '@nestjs/core';
 
 import { ROLES_KEY } from 'src/common/decorators/roles.decorator';
-import { EUserRole } from '../enums/enum';
+import { EUserRole, ErrorCode } from '../enums/enum';
 import { JwtPayload } from 'src/modules/auth/jwt-payload.interface';
+import { ERROR_MESSAGES } from 'src/utils/error.message.constant';
+
 interface AuthRoleRequest extends Request {
-  user: JwtPayload;
+  user?: JwtPayload | { role?: EUserRole };
+  claims?: { role?: EUserRole };
 }
 
 @Injectable()
@@ -30,16 +33,31 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<AuthRoleRequest>();
 
-    const user = request.user;
+    const user = request.user ?? request.claims;
 
     if (!user) {
-      throw new ForbiddenException('User not authenticated from roles');
+      throw new ForbiddenException({
+        code: ErrorCode.FORBIDDEN_ROLE,
+        message: ERROR_MESSAGES[ErrorCode.FORBIDDEN_ROLE],
+      });
     }
 
-    console.log('Role:', user.role);
-    console.log('Name:', user.username);
-    console.log('Required Roles:', requiredRoles);
+    const role = user.role;
 
-    return requiredRoles.includes(user.role);
+    if (!role) {
+      throw new ForbiddenException({
+        code: ErrorCode.USER_DOES_NOT_EXIST,
+        message: ERROR_MESSAGES[ErrorCode.USER_DOES_NOT_EXIST],
+      });
+    }
+
+    if (!requiredRoles.includes(role)) {
+      throw new ForbiddenException({
+        code: ErrorCode.FORBIDDEN_ROLE,
+        message: ERROR_MESSAGES[ErrorCode.FORBIDDEN_ROLE],
+      });
+    }
+
+    return true;
   }
 }
