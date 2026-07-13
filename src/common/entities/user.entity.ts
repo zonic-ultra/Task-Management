@@ -39,7 +39,7 @@ export class User {
 
   @Column({ type: 'simple-array', nullable: true })
   @IsEnum(EActions)
-  claims: string[]; // ← was string[], now EActions[]
+  claims: string[];
 
   @CreateDateColumn()
   @Transform(transformDateToISOString)

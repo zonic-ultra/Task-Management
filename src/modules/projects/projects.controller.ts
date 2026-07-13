@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -29,7 +30,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/common/entities/user.entity';
 import { GetUser } from '../auth/get-user.decorators';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Claims } from 'src/common/decorators/claims.decorator';
 import { EActions } from 'src/common/claims/task-claims.enum';
 import type { Response } from 'express';
@@ -42,23 +43,29 @@ export class ProjectsController {
 
   @Get()
   @Roles(EUserRole.PROJECT_MANAGER)
+  @ApiQuery({
+    name: 'id',
+    required: false,
+    type: Number,
+    description: 'Project id',
+  })
   async getAll(
-    @Body() dto: GetProjectDto,
+    @Query() dto: GetProjectDto,
     @Req() req: ICustomRequest,
     @Res() res: Response,
   ) {
     await this.proSer.getProjects(dto, req, res);
   }
 
-  @Get('/single')
-  @Roles(EUserRole.PROJECT_MANAGER)
-  async getOne(
-    @Body() dto: GetProjectDto,
-    @Req() req: ICustomRequest,
-    @Res() res: Response,
-  ) {
-    await this.proSer.getProjects(dto, req, res);
-  }
+  // @Get('/single')
+  // @Roles(EUserRole.PROJECT_MANAGER)
+  // async getOne(
+  //   @Query() dto: GetProjectDto,
+  //   @Req() req: ICustomRequest,
+  //   @Res() res: Response,
+  // ) {
+  //   await this.proSer.getProject(dto, req, res);
+  // }
   @Roles(EUserRole.PROJECT_MANAGER)
   @Claims(EActions.CREATE)
   @Post('/create')

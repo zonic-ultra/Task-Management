@@ -1,7 +1,8 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EProjectStatus } from '../enums/enum';
 import { IsCustomDate, IsFutureDate } from 'src/utils/common.helper';
+import { Type } from 'class-transformer';
 
 export class CreateProjectDto {
   @ApiProperty({
@@ -10,6 +11,9 @@ export class CreateProjectDto {
     required: false,
   })
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   id?: number;
 
   @ApiProperty({
@@ -19,16 +23,17 @@ export class CreateProjectDto {
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(150)
   title: string;
 
   @ApiProperty({
-    example:
-      'Complete overhaul of the company e-commerce website with new UI/UX',
+    example: 'Complete overhaul of the company e-commerce website with new UI/UX',
     description: 'Detailed project description',
     required: false,
   })
   @IsString()
   @IsOptional()
+  @MaxLength(1000)
   description: string;
 
   @ApiProperty({
@@ -38,9 +43,9 @@ export class CreateProjectDto {
     required: false,
   })
   @IsOptional()
+  @IsString()
   @IsCustomDate()
   @IsFutureDate()
-  @IsString()
   start_date: string;
 
   @ApiProperty({
@@ -50,9 +55,9 @@ export class CreateProjectDto {
     required: false,
   })
   @IsOptional()
+  @IsString()
   @IsCustomDate()
   @IsFutureDate()
-  @IsString()
   end_date: string;
 }
 
@@ -63,6 +68,9 @@ export class UpdateProjectDto {
     required: true,
   })
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   id?: number;
 
   @ApiProperty({
@@ -72,6 +80,7 @@ export class UpdateProjectDto {
   })
   @IsString()
   @IsOptional()
+  @MaxLength(150)
   title: string;
 
   @ApiProperty({
@@ -81,6 +90,7 @@ export class UpdateProjectDto {
   })
   @IsString()
   @IsOptional()
+  @MaxLength(1000)
   description?: string;
 
   @ApiProperty({
@@ -119,6 +129,8 @@ export class UpdateProjectDto {
 export class GetProjectDto {
   @ApiProperty({ description: 'id', required: false })
   @IsOptional()
-  // @IsString()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   id?: number;
 }
