@@ -163,6 +163,7 @@ export class ProjectsService {
           title: true,
           description: true,
           status: true,
+          // owner_id: true,
           start_date: true,
           end_date: true,
           created_at: true,

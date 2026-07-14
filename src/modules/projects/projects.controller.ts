@@ -43,12 +43,6 @@ export class ProjectsController {
 
   @Get()
   @Roles(EUserRole.PROJECT_MANAGER)
-  @ApiQuery({
-    name: 'id',
-    required: false,
-    type: Number,
-    description: 'Project id',
-  })
   async getAll(
     @Query() dto: GetProjectDto,
     @Req() req: ICustomRequest,

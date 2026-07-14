@@ -1,22 +1,18 @@
 const env = () => process.env.STAGE ?? 'dev';
 
-export const userKey = (id: string | number) =>
-  `${env()}:tm:user:${id}`;
+export const userKey = (id: string | number) => `${env()}:tm:user:${id}`;
 
-export const sessionKey = (id: string | number) =>
-  `${env()}:tm:session:${id}`;
+export const sessionKey = (id: string | number) => `${env()}:tm:session:${id}`;
 
 export const userPermissionsKey = (id: string | number) =>
   `${env()}:tm:user:${id}:permissions`;
 
-export const projectKey = (id: string | number) =>
-  `${env()}:tm:project:${id}`;
+export const projectKey = (id: string | number) => `${env()}:tm:project:${id}`;
 
 export const projectsByOwnerKey = (owner_id: string | number) =>
   `${env()}:tm:projects:owner:${owner_id}`;
 
-export const taskKey = (id: string | number) =>
-  `${env()}:tm:task:${id}`;
+export const taskKey = (id: string | number) => `${env()}:tm:task:${id}`;
 
 export const tasksByProjectKey = (project_id: string | number) =>
   `${env()}:tm:tasks:project:${project_id}`;

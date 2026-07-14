@@ -1,7 +1,4 @@
-import {
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -23,7 +20,15 @@ import {
 import { WebsocketService } from './websocket.service';
 
 @UsePipes(new ValidationPipe({ transform: true }))
-@WebSocketGateway({ namespace: 'tasks-notifications', cors: { origin: '*' } })
+// @WebSocketGateway({ namespace: 'tasks-notifications', cors: { origin: '*' } })
+
+@WebSocketGateway({
+  namespace: 'tasks-notifications',
+  cors: {
+    origin: ['https://tasks-tracker-kappa.vercel.app', 'http://localhost:3000'],
+    credentials: true,
+  },
+})
 export class WebsocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

@@ -1,4 +1,12 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EProjectStatus } from '../enums/enum';
 import { IsCustomDate, IsFutureDate } from 'src/utils/common.helper';
@@ -27,7 +35,8 @@ export class CreateProjectDto {
   title: string;
 
   @ApiProperty({
-    example: 'Complete overhaul of the company e-commerce website with new UI/UX',
+    example:
+      'Complete overhaul of the company e-commerce website with new UI/UX',
     description: 'Detailed project description',
     required: false,
   })
@@ -127,10 +136,7 @@ export class UpdateProjectDto {
 }
 
 export class GetProjectDto {
-  @ApiProperty({ description: 'id', required: false })
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  id?: number;
+  @IsString()
+  id?: string;
 }

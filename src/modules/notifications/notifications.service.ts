@@ -42,7 +42,13 @@ export class NotificationsService {
       const pageSize = 100;
 
       while (more) {
-        const page = await this.redis.xrange(noticeKey, cursor, '+', 'COUNT', pageSize);
+        const page = await this.redis.xrange(
+          noticeKey,
+          cursor,
+          '+',
+          'COUNT',
+          pageSize,
+        );
         if (!page.length) break;
 
         for (const [id] of page) {
@@ -75,7 +81,13 @@ export class NotificationsService {
     try {
       const noticeKey = userNotificationKey(userId);
       const start = stream_id?.includes('-') ? `(${stream_id}` : '+';
-      const data = await this.redis.xrevrange(noticeKey, start, '-', 'COUNT', limit);
+      const data = await this.redis.xrevrange(
+        noticeKey,
+        start,
+        '-',
+        'COUNT',
+        limit,
+      );
 
       let last: string | null = null;
       const notifications: unknown[] = [];
@@ -119,7 +131,10 @@ export class NotificationsService {
     }
   }
 
-  async markRead(userId: number, streamIds: string[]): Promise<{ code: number }> {
+  async markRead(
+    userId: number,
+    streamIds: string[],
+  ): Promise<{ code: number }> {
     try {
       const readKey = readNotificationKey(userId);
       const unreadKey = unreadNotificationKey(userId);

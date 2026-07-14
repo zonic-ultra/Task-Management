@@ -45,6 +45,30 @@ export class WebsocketService {
     return this.server;
   }
 
+  // async handleConnection(client: Socket): Promise<void> {
+  //   try {
+  //     const bearer = client?.handshake?.auth?.access_token as string;
+  //     let decoded: IClaims | null = null;
+
+  //     try {
+  //       decoded = this.authService.verifyToken(bearer);
+  //     } catch {
+  //       decoded = this.authService.decodeToken(bearer);
+  //     }
+
+  //     if (!decoded?.id) throw new Error('invalid token claims');
+
+  //     client.data = decoded;
+  //     await client.join(userRoom(decoded.id));
+  //     await this.trimNotifications(client);
+  //     client.emit(ESocketEvent.ConnectionStatus, { code: 0 });
+  //   } catch (error: unknown) {
+  //     const msg = error instanceof Error ? error.message : String(error);
+  //     this.logger.warn(`handleConnection failed: ${msg}`);
+  //     client.emit(ESocketEvent.ConnectionStatus, { code: 1 });
+  //     client.disconnect();
+  //   }
+  // }
   async handleConnection(client: Socket): Promise<void> {
     try {
       const bearer = client?.handshake?.auth?.access_token as string;
@@ -62,6 +86,9 @@ export class WebsocketService {
       await client.join(userRoom(decoded.id));
       await this.trimNotifications(client);
       client.emit(ESocketEvent.ConnectionStatus, { code: 0 });
+      this.logger.log(
+        `client connected and joined room: ${userRoom(decoded.id)}`,
+      ); // ← add this one line
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
       this.logger.warn(`handleConnection failed: ${msg}`);
@@ -69,7 +96,6 @@ export class WebsocketService {
       client.disconnect();
     }
   }
-
   handleDisconnect(client: Socket): void {
     const user = client?.data as IClaims;
     this.logger.log(`client disconnected: user ${user?.id ?? 'unknown'}`);

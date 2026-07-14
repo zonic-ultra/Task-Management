@@ -7,7 +7,12 @@ import { NotificationHelper } from '../common/notifications/notification.helper'
 
 @Module({
   imports: [forwardRef(() => AuthModule)],
-  providers: [WebsocketGateway, WebsocketService, RedisPubSub, NotificationHelper],
+  providers: [
+    WebsocketGateway,
+    WebsocketService,
+    RedisPubSub,
+    NotificationHelper,
+  ],
   exports: [WebsocketService, RedisPubSub, NotificationHelper],
 })
 export class WebsocketModule {}

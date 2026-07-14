@@ -3,23 +3,23 @@ import { WebsocketService } from '../../websocket/websocket.service';
 
 // ADMIN notifications
 export enum EAdminNotification {
-  USER_REGISTERED = 'USER_REGISTERED',
-  USER_LOGIN = 'USER_LOGIN',
+  USER_REGISTERED = ' New user registered',
+  USER_LOGIN = 'User login',
 }
 
 // PROJECT MANAGER notifications
 export enum EManagerNotification {
-  PROJECT_CREATED = 'PROJECT_CREATED',
-  PROJECT_UPDATED = 'PROJECT_UPDATED',
-  PROJECT_DELETED = 'PROJECT_DELETED',
-  PROJECT_STATUS_CHANGED = 'PROJECT_STATUS_CHANGED',
+  PROJECT_CREATED = 'New Project created',
+  PROJECT_UPDATED = 'Project updated',
+  PROJECT_DELETED = 'Project deleted',
+  PROJECT_STATUS_CHANGED = 'Project status change',
 }
 
 // MEMBER notifications
 export enum EMemberNotification {
-  TASK_ASSIGNED = 'TASK_ASSIGNED',
-  TASK_STATUS_UPDATED = 'TASK_STATUS_UPDATED',
-  TASK_DELETED = 'TASK_DELETED',
+  TASK_ASSIGNED = ' Task assigned',
+  TASK_STATUS_UPDATED = ' Task status updated',
+  TASK_DELETED = 'Task deleted',
 }
 
 export type ENotificationType =

@@ -23,9 +23,13 @@ export class NotificationsController {
   getAll(
     @GetUser() user: User,
     @Query('limit') limit?: number,
-    @Query('stream_id') stream_id?: string,
+    // @Query('stream_id') stream_id?: string,
   ) {
-    return this.notificationsService.getAll(user.id, limit ? Number(limit) : 20, stream_id);
+    return this.notificationsService.getAll(
+      user.id,
+      limit ? Number(limit) : 20,
+      // stream_id,
+    );
   }
 
   @Get('count')
