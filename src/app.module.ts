@@ -1,3 +1,5 @@
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { WebsocketModule } from './websocket/websocket.module';
 import { RedisUtilModule } from './common/redis/redis-util.module';
 import { MembersModule } from './modules/members/members.module';
 import { SubtasksModule } from './modules/subtasks/subtasks.module';
@@ -30,6 +32,8 @@ import { configValidationSchema } from './common/database/config.schema';
       expandVariables: true,
     }),
     RedisUtilModule,
+    WebsocketModule,
+    NotificationsModule,
     MembersModule,
     SubtasksModule,
     UsersModule,

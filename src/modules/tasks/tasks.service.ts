@@ -13,25 +13,25 @@ import {
   GetTasksFilterDto,
   UpdateTaskStatusDto,
 } from 'src/common/dtos/task.dto';
+import {
+  EMemberNotification,
+  NotificationHelper,
+} from 'src/common/notifications/notification.helper';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Tasks, 'main_repo')
     private tasksRepository: Repository<Tasks>,
+    private readonly notificationHelper: NotificationHelper,
   ) {}
 
   async getMyTasksOnProject(assignee_id: User): Promise<Tasks[]> {
     const query = this.tasksRepository.createQueryBuilder('tasks');
-
     query.where({ assignee_id });
-
-    const tasks = await query.getMany();
-
-    return tasks;
+    return query.getMany();
   }
-  //errorrrrrrrrrrrrrrrrrrrrrrrrrrrr
-  // ─── GET TASKS BY PROJECT ────────────────────────────
+
   getTasksByProject(projectId: number): Promise<Tasks[]> {
     return this.tasksRepository.find({
       where: { project_id: projectId },
@@ -39,7 +39,6 @@ export class TasksService {
     });
   }
 
-  // ─── GET SINGLE TASK ─────────────────────────────────
   async getTaskByID(id: number): Promise<Tasks> {
     const task = await this.tasksRepository.findOne({
       where: { id },
@@ -53,27 +52,31 @@ export class TasksService {
     return task;
   }
 
-  // ─── CREATE TASK ─────────────────────────────────────
   async createTask(
     createTaskDto: CreateTaskDto,
     projectId: number,
     user: User,
   ): Promise<Tasks> {
     const task = this.tasksRepository.create({
-      // title: createTaskDto.title,
-      // description: createTaskDto.description,
-      // priority: createTaskDto.priority,
-      // assignee_id: createTaskDto.assignee_id,
-      // due_date: createTaskDto.due_date,
       ...createTaskDto,
-      project_id: projectId, // ← from URL param
-      created_by: user.id, // ← from JWT
+      project_id: projectId,
+      created_by: user.id,
     });
 
-    return this.tasksRepository.save(task);
+    const saved = await this.tasksRepository.save(task);
+
+    if (saved.assignee_id) {
+      void this.notificationHelper.notifyMember(
+        saved.assignee_id,
+        EMemberNotification.TASK_ASSIGNED,
+        `You have been assigned to task "${saved.title}"`,
+        { task_id: saved.id, project_id: saved.project_id },
+      );
+    }
+
+    return saved;
   }
 
-  // ─── UPDATE STATUS ───────────────────────────────────
   async updateTaskStatus(
     id: number,
     update: UpdateTaskStatusDto,
@@ -91,10 +94,20 @@ export class TasksService {
     }
 
     task.status = update.status;
-    return this.tasksRepository.save(task);
+    const saved = await this.tasksRepository.save(task);
+
+    if (task.assignee_id) {
+      void this.notificationHelper.notifyMember(
+        task.assignee_id,
+        EMemberNotification.TASK_STATUS_UPDATED,
+        `Task "${task.title}" status changed to "${update.status}"`,
+        { task_id: task.id, project_id: task.project_id, status: update.status },
+      );
+    }
+
+    return saved;
   }
 
-  // ─── DELETE TASK ─────────────────────────────────────
   async deleteTaskById(id: number, user: User): Promise<void> {
     const task = await this.getTaskByID(id);
 
@@ -108,5 +121,14 @@ export class TasksService {
     }
 
     await this.tasksRepository.delete(task.id);
+
+    if (task.assignee_id) {
+      void this.notificationHelper.notifyMember(
+        task.assignee_id,
+        EMemberNotification.TASK_DELETED,
+        `Task "${task.title}" has been deleted`,
+        { task_id: task.id, project_id: task.project_id },
+      );
+    }
   }
 }

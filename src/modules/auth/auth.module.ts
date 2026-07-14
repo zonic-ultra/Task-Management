@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './dto/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { WebsocketModule } from '../../websocket/websocket.module';
 
 @Module({
   imports: [
@@ -23,9 +24,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
     }),
     TypeOrmModule.forFeature([User], 'main_repo'),
+    forwardRef(() => WebsocketModule),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [JwtStrategy, PassportModule],
+  exports: [JwtStrategy, PassportModule, AuthService],
 })
 export class AuthModule {}

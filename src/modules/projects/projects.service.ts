@@ -18,6 +18,10 @@ import { ErrorCode } from 'src/common/enums/enum';
 import { RedisCacheService } from 'src/common/redis/redis-cach.service';
 import { projectKey, projectsByOwnerKey } from 'src/common/redis/redis.keys';
 import { PROJECT_TTL } from 'src/common/redis/redis.ttl';
+import {
+  EManagerNotification,
+  NotificationHelper,
+} from 'src/common/notifications/notification.helper';
 
 @Injectable()
 export class ProjectsService {
@@ -27,6 +31,7 @@ export class ProjectsService {
     @InjectRepository(Project, 'main_repo')
     private readonly projectRepo: Repository<Project>,
     private readonly redis: RedisCacheService,
+    private readonly notificationHelper: NotificationHelper,
   ) {}
 
   // async getProjects(owner_id: User): Promise<IResponse<Project[]>> {
@@ -220,6 +225,13 @@ export class ProjectsService {
       await this.projectRepo.save(project);
       await this.redis.del(projectsByOwnerKey(id));
 
+      void this.notificationHelper.notify(
+        id,
+        EManagerNotification.PROJECT_CREATED,
+        `Project "${dto.title}" has been created`,
+        { project_id: project.id },
+      );
+
       response.data = { code: 0, data: project };
       response.code = HttpStatus.CREATED;
     } catch (error) {
@@ -292,6 +304,18 @@ export class ProjectsService {
       await this.projectRepo.update({ id: dto.id }, entry);
       await this.redis.del(projectKey(dto.id));
       await this.redis.del(projectsByOwnerKey(userId));
+
+      const isStatusChange = dto.status !== undefined;
+      void this.notificationHelper.notify(
+        userId,
+        isStatusChange
+          ? EManagerNotification.PROJECT_STATUS_CHANGED
+          : EManagerNotification.PROJECT_UPDATED,
+        isStatusChange
+          ? `Project status changed to "${dto.status}"`
+          : `Project "${project.title}" has been updated`,
+        { project_id: dto.id },
+      );
 
       response.data = { code: 0, data: entry };
       response.code = HttpStatus.OK;

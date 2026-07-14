@@ -240,3 +240,12 @@ export function safeParser<T>(value: unknown): T | null {
     return null;
   }
 }
+
+// common/utils/redis.helper.ts
+export function compareStreamId(a: string, b: string): number {
+  const [aMs, aSeq] = a.split('-').map(Number);
+  const [bMs, bSeq] = b.split('-').map(Number);
+
+  if (aMs !== bMs) return aMs - bMs;
+  return (aSeq ?? 0) - (bSeq ?? 0);
+}

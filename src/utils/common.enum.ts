@@ -11,6 +11,7 @@ export enum ENotificationType {
 
 export enum ESocketEvent {
   NewNotification = 'new_notification',
+  ConnectionStatus = 'connection_status',
 }
 
 export enum EAdjustments {

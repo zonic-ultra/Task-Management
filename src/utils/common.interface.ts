@@ -21,18 +21,25 @@ export interface ICustomRequest extends Request {
   };
 }
 
+export interface INotification {
+  notification_type: string;
+  message: string;
+  read: number;
+  created_at?: string;
+  [key: string]: unknown;
+}
 export interface IResponse {
   code: number;
   data: Record<any, any> | null;
 }
 
-export interface INotification {
-  notification_type: ENotificationType;
-  internal_data: string;
-  created_at: string;
-  created_by: number | string;
-  creator_role: EAppRole;
-}
+// export interface INotification {
+//   notification_type: ENotificationType;
+//   internal_data: string;
+//   created_at: string;
+//   created_by: number | string;
+//   creator_role: EAppRole;
+// }
 
 export interface INotificationAdjustment {
   org_id: number;

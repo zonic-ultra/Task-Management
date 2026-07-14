@@ -1,1 +1,1 @@
-export const notificationBroadcast = 'notification-broadcast';
+export const notificationBroadcast = 'tm:notification-broadcast';

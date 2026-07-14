@@ -16,6 +16,10 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
 import { ROLE_CLAIMS } from 'src/common/permissions/role-claims';
 import { User } from 'src/common/entities/user.entity';
+import {
+  EAdminNotification,
+  NotificationHelper,
+} from 'src/common/notifications/notification.helper';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +33,16 @@ export class AuthService {
     private userRepository: Repository<User>,
 
     private readonly jwtService: JwtService,
+    private readonly notificationHelper: NotificationHelper,
   ) {}
+
+  verifyToken(token: string): JwtPayload {
+    return this.jwtService.verify<JwtPayload>(token);
+  }
+
+  decodeToken(token: string): JwtPayload | null {
+    return this.jwtService.decode<JwtPayload>(token);
+  }
 
   async register(authCredentialsDto: RegisterUserDto): Promise<void> {
     const { name, username, password, role } = authCredentialsDto;
@@ -64,6 +77,13 @@ export class AuthService {
     });
 
     await this.userRepository.save(user);
+
+    void this.notificationHelper.notify(
+      user.id,
+      EAdminNotification.USER_REGISTERED,
+      `New user "${username}" registered`,
+      { username, role: userRole },
+    );
   }
 
   async login(
@@ -112,6 +132,13 @@ export class AuthService {
     console.log('JWT Payload:', payload);
 
     const accessToken = this.jwtService.sign(payload);
+
+    void this.notificationHelper.notify(
+      user.id,
+      EAdminNotification.USER_LOGIN,
+      `User "${user.username}" logged in`,
+      { username: user.username, role: user.role },
+    );
 
     return { accessToken };
   }

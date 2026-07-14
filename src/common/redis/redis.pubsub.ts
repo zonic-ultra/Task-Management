@@ -1,57 +1,42 @@
-// import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-// import { errorLog } from '../elastic/elastic.logger.js';
-// import { extractError, safeString } from '../../utils/common.helper.js';
-// import Redis from 'ioredis';
-// import { WebsocketService } from '../../modules/websocket/websocket.service.js';
-// import { REDIS_CLIENT, REDIS_SUBSCRIBER } from './redis-con.module';
-// import { notificationBroadcast } from './redis.channels.js';
-// import { RedisLock } from './redis.lock';
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+import { Inject, Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import Redis from 'ioredis';
+import { REDIS_CLIENT, REDIS_SUBSCRIBER } from './redis-con.module';
+import { notificationBroadcast } from './redis.channels';
+import { WebsocketService } from '../../modules/websocket/websocket.service';
 
-// @Injectable()
-// export class RedisPubSub implements OnApplicationBootstrap {
-//   constructor(
-//     private readonly redisLock: RedisLock,
-//     private readonly websocket: WebsocketService,
+@Injectable()
+export class RedisPubSub implements OnApplicationBootstrap {
+  private readonly logger = new Logger(RedisPubSub.name);
 
-//     @Inject(REDIS_CLIENT) private readonly redis: Redis,
-//     @Inject(REDIS_SUBSCRIBER) private readonly subscriber: Redis,
-//   ) {}
+  constructor(
+    @Inject(REDIS_CLIENT) private readonly redis: Redis,
+    @Inject(REDIS_SUBSCRIBER) private readonly subscriber: Redis,
+    private readonly websocket: WebsocketService,
+  ) {}
 
-//   onApplicationBootstrap() {
-//     this.subscribeChannel();
-//   }
+  onApplicationBootstrap() {
+    this.subscriber.on('message', (channel: string, message: string) => {
+      if (channel === notificationBroadcast) {
+        this.handleBroadcast(message);
+      }
+    });
+  }
 
-//   publish(channel: string, message: string) {
-//     try {
-//       this.redis.publish(channel, message);
-//     } catch (error) {
-//       const log = {
-//         publish_error: safeString({ channel, message }),
-//         extracted_error: extractError(error),
-//       };
-//       errorLog('CATCH: Redis - publish', log);
-//     }
-//   }
+  publish(channel: string, message: unknown) {
+    const payload = typeof message === 'string' ? message : JSON.stringify(message);
+    this.redis.publish(channel, payload).catch((error: unknown) => {
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`publish error on channel ${channel}: ${msg}`);
+    });
+  }
 
-//   async subscribeChannel() {
-//     this.subscriber.on('message', (channel: string, message: string) => {
-//       if (channel === notificationBroadcast) {
-//         this.handleBroadcast(message);
-//       }
-//     });
-//   }
-
-//   async handleBroadcast(message: string) {
-//     try {
-//       const server = (await this.websocket.getServer()) as unknown;
-
-//       if (!server) return;
-
-//       server.emit('redis:notification', safeString(message));
-//     } catch (error) {
-//       errorLog('CATCH: Redis - handleBroadcast', {
-//         catch_error: extractError(error),
-//       });
-//     }
-//   }
-// }
+  private handleBroadcast(message: string) {
+    try {
+      this.websocket.broadcast('redis:notification', message);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`handleBroadcast error: ${msg}`);
+    }
+  }
+}
