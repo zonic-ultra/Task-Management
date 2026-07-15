@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-import { Inject, Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import Redis from 'ioredis';
 import { REDIS_CLIENT, REDIS_SUBSCRIBER } from './redis-con.module';
 import { notificationBroadcast } from './redis.channels';
@@ -24,7 +29,8 @@ export class RedisPubSub implements OnApplicationBootstrap {
   }
 
   publish(channel: string, message: unknown) {
-    const payload = typeof message === 'string' ? message : JSON.stringify(message);
+    const payload =
+      typeof message === 'string' ? message : JSON.stringify(message);
     this.redis.publish(channel, payload).catch((error: unknown) => {
       const msg = error instanceof Error ? error.message : String(error);
       this.logger.error(`publish error on channel ${channel}: ${msg}`);

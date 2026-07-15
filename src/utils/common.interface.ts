@@ -1,6 +1,5 @@
 import { EActions } from '../common/claims/task-claims.enum.js';
 import { EUserRole } from '../common/enums/enum.js';
-import { EAppRole, ENotificationType } from './common.enum.js';
 import { Request } from 'express';
 
 export interface IClaims {

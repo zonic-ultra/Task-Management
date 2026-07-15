@@ -23,9 +23,10 @@ import { WebsocketService } from './websocket.service';
 // @WebSocketGateway({ namespace: 'tasks-notifications', cors: { origin: '*' } })
 
 @WebSocketGateway({
-  namespace: 'tasks-notifications',
+  namespace: '/tasks-notifications',
   cors: {
-    origin: ['https://tasks-tracker-kappa.vercel.app', 'http://localhost:3000'],
+    // origin: ['https://tasks-tracker-kappa.vercel.app', 'http://localhost:3000'],
+    origin: '*',
     credentials: true,
   },
 })

@@ -71,7 +71,7 @@ export class WebsocketService {
   // }
   async handleConnection(client: Socket): Promise<void> {
     try {
-      const bearer = client?.handshake?.auth?.access_token as string;
+      const bearer = client?.handshake?.auth?.accessToken as string;
       let decoded: IClaims | null = null;
 
       try {
