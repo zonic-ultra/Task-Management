@@ -78,11 +78,10 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    void this.notificationHelper.notify(
-      user.id,
+    void this.notificationHelper.notifyAdmins(
       EAdminNotification.USER_REGISTERED,
-      `New user "${username}" registered`,
-      { username, role: userRole },
+      `New user "${name}" registered`,
+      { id: user.id },
     );
   }
 
@@ -133,11 +132,10 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload);
 
-    void this.notificationHelper.notify(
-      user.id,
+    void this.notificationHelper.notifyAdmins(
       EAdminNotification.USER_LOGIN,
-      `User "${user.username}" logged in`,
-      { username: user.username, role: user.role },
+      `${user.name} logged in`,
+      { id: user.id },
     );
 
     return { accessToken };

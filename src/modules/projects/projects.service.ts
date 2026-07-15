@@ -226,7 +226,7 @@ export class ProjectsService {
       await this.projectRepo.save(project);
       await this.redis.del(projectsByOwnerKey(id));
 
-      void this.notificationHelper.notify(
+      void this.notificationHelper.notifyManager(
         id,
         EManagerNotification.PROJECT_CREATED,
         `Project "${dto.title}" has been created`,
@@ -307,7 +307,7 @@ export class ProjectsService {
       await this.redis.del(projectsByOwnerKey(userId));
 
       const isStatusChange = dto.status !== undefined;
-      void this.notificationHelper.notify(
+      void this.notificationHelper.notifyManager(
         userId,
         isStatusChange
           ? EManagerNotification.PROJECT_STATUS_CHANGED

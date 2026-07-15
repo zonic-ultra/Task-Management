@@ -4,9 +4,14 @@ import { WebsocketService } from './websocket.service';
 import { AuthModule } from '../modules/auth/auth.module';
 import { RedisPubSub } from '../common/redis/redis.pubsub.service';
 import { NotificationHelper } from '../common/notifications/notification.helper';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/common/entities';
 
 @Module({
-  imports: [forwardRef(() => AuthModule)],
+  imports: [
+    forwardRef(() => AuthModule),
+    TypeOrmModule.forFeature([User], 'main_repo'),
+  ],
   providers: [
     WebsocketGateway,
     WebsocketService,
