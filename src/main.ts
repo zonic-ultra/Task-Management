@@ -19,9 +19,14 @@ async function bootstrap() {
     // origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
-    exposedHeaders: ['x-auth-token'], // ← add this
+    // exposedHeaders: ['x-auth-token']
     // allowedHeaders: ['Content-Type'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    // allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'ngrok-skip-browser-warning',
+    ],
   });
   // app.enableCors();
 
